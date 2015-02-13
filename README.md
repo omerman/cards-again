@@ -1,9 +1,5 @@
-# Vert.x Example Maven Project
+# Cards-again
 
-Example project for creating a Vert.x module with a Gradle build.
-
-By default this module contains a simple Java verticle which listens on the event bus and responds to `ping!`
-messages with `pong!`.
-
-This example also shows you how to write tests in Java, Groovy, Ruby and Python
+This project was for myself. it meant for me to learn how to use angularJS + Vertx.
+I know.. it is not written in the best way, but it serves it's purpose.
 
