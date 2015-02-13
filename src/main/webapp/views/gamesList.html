@@ -1,0 +1,5 @@
+<div class="gamesList auto-unregister">
+    <a ng-repeat="game in data.gamesList track by $index" href="{{hrefByGameIndex($index)}}">
+    {{data.gamesList[$index].name}}    {{data.gamesList[$index].players.length}}/4
+    </a>
+</div>

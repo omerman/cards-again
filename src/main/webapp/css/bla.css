@@ -1,0 +1,28 @@
+.card {
+	height: 23%;
+	width: 12%;
+}
+.card:before {
+    display:block;
+}
+.card:after {
+    display:block;
+    -ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+    transform: rotate(180deg);
+    white-space:pre;
+}
+.card span:before {
+	white-space:pre;
+}
+
+
+
+.card.cardNum7:after {
+    content:"           7";
+}
+.card.cardNum7.cardFamily1 span:before {
+    display:block;
+    content:"\2660\A   \2660\A \2660   \2660";
+    white-space:pre;
+}

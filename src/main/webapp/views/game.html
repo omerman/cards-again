@@ -1,0 +1,32 @@
+<div class = "game auto-unregister">
+    <div class = "horizontal">
+        <player player-name="getPlayerName(2)" is-defender="isDefender(2)" is-first-attacker="isFirstAttacker(2)"></player>
+        <opp-hand cards-num="getPlayerCardsNum(2)" ></opp-hand>
+    </div>
+    <div class="vertical">
+        <div>
+            <player player-name="getPlayerName(3)" class="leftPlayer" is-defender="isDefender(3)" is-first-attacker="isFirstAttacker(3)"></player>
+            <opp-hand cards-num="getPlayerCardsNum(3)" ></opp-hand>
+        </div>
+        <yack yack-info="data.yackInfo"></yack>
+        <div>
+            <player player-name="getPlayerName(1)" class="rightPlayer" is-defender="isDefender(1)" is-first-attacker="isFirstAttacker(1)"></player>
+            <opp-hand cards-num="getPlayerCardsNum(1)"></opp-hand>
+        </div>
+    </div>
+    <div class = "horizontal closerPlayer">
+        <player player-name="getPlayerName(0)" is-defender="isDefender(0)" is-first-attacker="isFirstAttacker(0)"></player>
+
+        <my-hand ng-if="data.myHand" my-hand="data.myHand">
+        </my-hand>
+        <div class="centerButtons">
+            <span ng-if="data.myHand && !data.isStarted" class="button smallerButton {{data.isReady ?'clicked' :''}}" ng-click="readyClick()">Ready</span>
+        </div>
+
+        <opp-hand ng-if="!data.myHand" cards-num="getPlayerCardsNum(0)" is-defender="isDefender(0)" is-first-attacker="isFirstAttacker(0)"></opp-hand>
+    </div>
+    <div class="deckWrapper">
+        <deck deck-size="data.deckSize" ng-if="data.deckSize"></deck>
+        <card ng-if="data.strongCard" suit="data.strongCard.suit" rank="data.strongCard.rank" class="strongCard"></card>
+    </div>
+</div>

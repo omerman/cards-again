@@ -1,0 +1,160 @@
+/*game flex*/
+
+.game {
+	display: flex;
+	height: 100%;
+	flex-flow: column wrap;
+	width: 100%;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/*game verticle/horizontal hand containers config */
+
+.gameContainer {
+    height:100%;
+}
+
+.game .horizontal {
+	order: 1;
+	flex-basis: 24%;
+	width: 100%;
+}
+
+
+.game .vertical{
+	order: 2;
+    display: flex;
+    flex-flow:row-reverse;
+    justify-content: space-between;
+	flex-basis: 42%;
+}
+
+.game .horizontal.closerPlayer {
+	order: 4;
+}
+
+.game .vertical > * {
+    height: 100%;
+}
+
+/* hands config */
+
+.game .hand {
+	display: flex;
+	justify-content: center;
+    height:100%
+}
+
+.game .horizontal .hand {
+	flex-flow: row;
+}
+
+.game .vertical .hand {
+	flex-flow: column;
+}
+
+.game .vertical > *{
+	align-self:center;
+}
+
+
+/*Cards config*/
+
+.game .horizontal .hand .card {
+	width:60px;
+	height:90px;
+	margin-left:-50px;
+}
+
+.game .yack .card {
+    width:60px;
+    height:90px;
+}
+
+.game .yack .card.backCard[answered=true] {
+    margin-bottom: -62px;
+}
+
+.game .vertical .hand .card {
+	width:90px;
+	height:60px;
+	margin-top:-55px;
+}
+
+.game .horizontal .myHand .card {
+	cursor:pointer;
+	margin-left:-30px;
+}
+.game .horizontal .myHand .card:hover,.game .yackPair .backCard:hover{
+	top:-15px;
+}
+.game .horizontal .myHand .card:active,.game .yackPair .backCard:active {
+    z-index:1;
+}
+
+/*Players config */
+.game .vertical .playerWrapper.rightPlayer {
+    position: relative;
+    left: 80px;
+    /*transform: rotate(-90deg);*/
+}
+.game .vertical .playerWrapper.leftPlayer {
+    position: relative;
+
+    right: 80px;
+    /*transform: rotate(90deg);*/
+}
+
+/*deck..*/
+
+.deckWrapper {
+    order: 5;
+    flex-basis: 10%;
+}
+
+.deckWrapper .card.strongCard {
+    width: 60px;
+    height: 90px;
+    position: relative;
+    z-index: 1;
+    left: 65px;
+    bottom: 0px;
+    transform: rotate(90deg);
+}
+
+.deck {
+    display: flex;
+    flex-flow: row;
+    position: absolute;
+    z-index: 2;
+}
+
+
+
+.deck .card {
+    width: 60px;
+    height: 90px;
+    margin-right: -61px;
+}
+
+/* yack */
+.yack {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    flex-grow: 1;
+    min-height: 214px;;
+    background: #FFFFC9;
+    align-items: center;
+}
+.yack > * {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-basis: 70px;
+    align-items: center;
+}

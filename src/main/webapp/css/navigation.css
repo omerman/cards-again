@@ -1,0 +1,64 @@
+
+.navigation {
+  list-style: none;
+  margin: 0; 
+  padding: 0;
+  background: #ffeebb;
+  
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  
+  -webkit-flex-flow: row wrap;
+justify-content: space-around;
+border-radius: 7pt;
+font-size: 200%;
+}
+
+.navigation a {
+  text-decoration: none;
+  display: block;
+  color: rgb(105, 51, 51);
+}
+
+.navigation a:hover {
+  background: #FEE6A1;
+  cursor: pointer;
+border-radius: 7pt;
+}
+
+@media all and (max-width: 800px) {
+  .navigation {
+    justify-content: space-around;
+  }
+}
+
+@media all and (min-height: 380px) {
+	  .navigation {
+	    justify-content: space-around;
+	  	line-height: 120%;
+	  }
+	}
+
+@media all and (min-height: 640px) {
+	  .navigation {
+	    justify-content: space-around;
+	  	line-height: 200%;
+	  }
+	}
+
+@media all and (max-height: 380px) {
+	  .navigation {
+	    justify-content: space-around;
+	  	font-size: 150%;
+	  }
+	}
+
+@media all and (max-width: 600px) {
+  .navigation {
+    -webkit-flex-flow: column wrap;
+    flex-flow: column wrap;
+  }
+}

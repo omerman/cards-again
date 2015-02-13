@@ -1,0 +1,17 @@
+{
+    "mongo-persistor" : {
+        "address": "vertx.mongopersistor",
+        "host": "localhost",
+        "port": 27017,
+        "pool_size": 1,
+        "db_name": "mongod"
+    },
+    "vertx-auth" : {
+        "user_collection": "users",
+        "persistor_address": "vertx.mongopersistor",
+        "session_timeout": 10
+    },
+    "sockjs-conf" : {
+    	"prefix" : "/gameBus"
+    }
+}

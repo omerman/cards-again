@@ -1,0 +1,128 @@
+.player {
+    width: 35px;
+    height: 35px;
+    background-color: #A0C3FF;
+    display: block;
+    border-radius: 50%;
+}
+.player > .head {
+    width: 12px;
+    height: 12px;
+    background: #4374E0;
+    border-radius: 50%;
+    position: relative;
+    top: 6px;
+    left: 12px;
+}
+.player > .body {
+    width: 24px;
+    background: #4374E0;
+    position: relative;
+    top: 8px;
+    left: 6px;
+}
+.player > .body.shoulders {
+    height:8px;
+    border-radius: 50% 50% 10% 10%;
+}
+.player > .body.waist {
+    height: 7px;
+    border-radius: 0 0 50% 50%;
+}
+.playerWrapper {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+}
+.player.firstAttacker{
+    -webkit-animation: firstAttackerColorChange 10s infinite;
+    animation: firstAttackerColorChange 10s infinite;
+    border: dashed 5px lightyellow;
+}
+.player.defender{
+    -webkit-animation: defenderColorChange 10s infinite;
+    animation: defenderColorChange 10s infinite;
+    border: dashed 5px indianred;
+}
+@keyframes defenderColorChange {
+    5%  {
+        background-color: indianred;
+    }
+    10%  {
+        background-color: #A0C3FF;
+    }
+    25%  {
+        background-color: indianred;
+    }
+    30% {
+        background-color: #A0C3FF;
+    }
+    50%  {
+        background-color: indianred;
+    }
+    55% {
+        background-color: #A0C3FF;
+    }
+}
+@-webkit-keyframes defenderColorChange /* Safari and Chrome */
+{
+    5%  {
+        background-color: indianred;
+    }
+    10%  {
+        background-color: #A0C3FF;
+    }
+    25%  {
+        background-color: indianred;
+    }
+    30% {
+        background-color: #A0C3FF;
+    }
+    50%  {
+        background-color: indianred;
+    }
+    55% {
+        background-color: #A0C3FF;
+    }
+}
+@keyframes firstAttackerColorChange {
+    5%  {
+        background-color: lightyellow;
+    }
+    10% {
+        background-color: #A0C3FF;
+    }
+    25%  {
+        background-color: lightyellow;
+    }
+    30% {
+        background-color: #A0C3FF;
+    }
+    50%  {
+        background-color: lightyellow;
+    }
+    55% {
+        background-color: #A0C3FF;
+    }
+}
+@-webkit-keyframes firstAttackerColorChange /* Safari and Chrome */
+{
+    5%  {
+        background-color: lightyellow;
+    }
+    10% {
+        background-color: #A0C3FF;
+    }
+    25%  {
+        background-color: lightyellow;
+    }
+    30% {
+        background-color: #A0C3FF;
+    }
+    50%  {
+        background-color: lightyellow;
+    }
+    55% {
+        background-color: #A0C3FF;
+    }
+}

@@ -1,0 +1,219 @@
+html {
+	height:100%;
+	width:100%;
+}
+/*div {
+	height: 100%;
+}*/
+#pageWrapper {
+    height:100%;
+}
+.floatLeft {
+	float:left;
+}
+.floatRight {
+	float:right;
+}
+body {
+    font: auto Helvetica;
+    background: #999999;
+    height:100%;
+    width:99%;
+    margin: 0 0px 0 8px;
+    padding: 0;
+}
+
+#main {
+    height: 90%;
+    margin: 0px;
+    padding: 0px;
+    display: -webkit-flex;
+    display:         flex;
+    -webkit-flex-flow: row;
+    flex-flow: row;
+}
+
+#main > .mainFrame {
+    margin: 4px;
+    padding: 0;
+    border: 1px solid #cccc33;
+    border-radius: 7pt;
+    background: #dddd88;
+    -webkit-flex: 3 1 60%;
+    flex: 3 1 60%;
+    -webkit-order: 2;
+    order: 2;
+    height:100%;
+}
+
+#main > .mainFrame > [ng-view] {
+    height:inherit;
+}
+
+#main > .mainFrame .title {
+    text-align: center;
+    font-size: 30px;
+    background: rgb(255, 238, 187);
+    color: rgb(105, 51, 51);
+    vertical-align: top;
+    padding-top: 0;
+    border-radius: 7pt;
+    margin: 0;
+}
+
+#main > .mainFrame .field label{
+    color: rgb(105, 51, 51);
+    width: 100px;
+    padding: 5px;
+    display:inline-block;
+}
+
+#main > .mainFrame .field input{
+    border:none;
+    background:rgb(255, 238, 187);
+}
+
+#main > .sideBar {
+   margin: 4px;
+   padding: 0;
+   border: 1px solid #8888bb;
+   border-radius: 7pt;
+   background: #ccccff;
+   -webkit-flex: 1 6 20%;
+           flex: 1 6 20%;
+   -webkit-order: 1;
+           order: 1;
+    max-width:250px;
+    height:100%;
+}
+
+#main > aside {
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #8888bb;
+    border-radius: 7pt;
+    background: #ccccff;
+    -webkit-flex: 1 6 20%;
+           flex: 1 6 20%;
+    -webkit-order: 3;
+           order: 3;
+}
+
+header, footer {
+    display: block;
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #eebb55;
+    border-radius: 7pt;
+    background: #ffeebb;
+    min-height:10px;
+}
+
+header {
+    height: 10%;
+}
+
+
+.upsideDown {
+    -ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+    transform: rotate(180deg);
+}
+
+  /* Too narrow to support three columns */
+@media all and (max-width: 640px) {
+
+      #main, #page {
+          -webkit-flex-flow: column;
+          flex-flow: column;
+          flex-direction: column;
+      }
+
+      #main > .mainFrame, #main > .sideBar, #main > aside {
+          /* Return them to document order */
+          -webkit-order: 0;
+          order: 0;
+      }
+
+      #main > .sideBar, #main > aside, header, footer {
+          min-height: 50px;
+          max-height: 50px;
+      }
+}
+.gamesList > * {
+    background: rgb(255, 238, 187);
+    border-radius: 7pt;
+    padding: 4px;
+    margin: 0px;
+    cursor: pointer;
+    word-spacing: 5px;
+    text-align: center;
+    display:block;
+    text-decoration: none;
+    color:rgb(105, 51, 51);
+}
+
+.gamesList > *:hover {
+    padding: 7px;
+    color: rgb(204, 204, 255);
+    box-shadow: 1px 3px 3px 1px #000;
+    margin:1px;
+}
+
+.centerButtons {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    padding-top:7px;
+}
+.centerButtons .button {
+    align-self: center;
+}
+
+.button {
+    background: #3498db;
+    background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+    background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+    background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+    background-image: -o-linear-gradient(top, #3498db, #2980b9);
+    background-image: linear-gradient(to bottom, #3498db, #2980b9);
+    -webkit-border-radius: 28;
+    -moz-border-radius: 28;
+    border-radius: 28px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+}
+.smallerButton {
+    padding: 2px;
+}
+.smallestButton {
+    padding: 2px;
+    font-size: small;
+}
+.button:hover {
+    background: #3cb0fd !important;
+    background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+    background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+    text-decoration: none;
+    cursor: pointer;
+}
+.button.clicked {
+    border:dashed;
+}
+p.message {
+    padding:0;
+    color: indianred;
+    height: 0;
+}
