@@ -27,10 +27,10 @@ define([], function () {//<game></game>
                         // and prev deck size was higher than 0,
                         // and I've had a hand,
                         // and (it needs to be completed
-                        //      or I was the defender and I have collected the cards which means I'm not the first attacker.)
-                        if (0 == $scope.data.yackInfo.length &&
+                        // or I was the defender and I have collected the cards which means I'm not the first attacker.)
+                        if ($scope.data.yackInfo && !$scope.data.yackInfo.length &&
                             prevDeckSize > 0 &&
-                            game.data.myHand &&
+                            $scope.data.myHand &&
                             ($scope.data.myHand.size() < 6 || (wasITheDefender && !$scope.isFirstAttacker(0)))) {
                             $scope.getMyHand();
                         }
