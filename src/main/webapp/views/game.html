@@ -1,32 +1,51 @@
-<div class = "game auto-unregister">
-    <div class = "horizontal">
-        <player player-name="getPlayerName(2)" is-defender="isDefender(2)" is-first-attacker="isFirstAttacker(2)"></player>
-        <opp-hand cards-num="getPlayerCardsNum(2)" ></opp-hand>
+<div class="game auto-unregister">
+    <div class="horizontal">
+        <div class="playerWrapper">
+            <player player-name="getPlayerName(2)" is-defender="isDefender(2)"
+                    is-first-attacker="isFirstAttacker(2)"></player>
+        </div>
+        <opp-hand cards-num="getPlayerCardsNum(2)"></opp-hand>
     </div>
     <div class="vertical">
-        <div>
-            <player player-name="getPlayerName(3)" class="leftPlayer" is-defender="isDefender(3)" is-first-attacker="isFirstAttacker(3)"></player>
-            <opp-hand cards-num="getPlayerCardsNum(3)" ></opp-hand>
-        </div>
-        <yack yack-info="data.yackInfo"></yack>
-        <div>
-            <player player-name="getPlayerName(1)" class="rightPlayer" is-defender="isDefender(1)" is-first-attacker="isFirstAttacker(1)"></player>
-            <opp-hand cards-num="getPlayerCardsNum(1)"></opp-hand>
+        <opp-hand cards-num="getPlayerCardsNum(1)"></opp-hand>
+        <div class="playerWrapper">
+            <player player-name="getPlayerName(1)" class="rightPlayer" is-defender="isDefender(1)"
+                    is-first-attacker="isFirstAttacker(1)"></player>
         </div>
     </div>
-    <div class = "horizontal closerPlayer">
-        <player player-name="getPlayerName(0)" is-defender="isDefender(0)" is-first-attacker="isFirstAttacker(0)"></player>
+    <yack yack-info="data.yackInfo"></yack>
+    <div class="vertical">
+        <div class="playerWrapper">
+            <player player-name="getPlayerName(3)" class="leftPlayer" is-defender="isDefender(3)"
+                    is-first-attacker="isFirstAttacker(3)"></player>
+        </div>
+        <opp-hand cards-num="getPlayerCardsNum(3)"></opp-hand>
+    </div>
+    <div class="horizontal closerPlayer">
+        <div class="playerWrapper">
+            <player player-name="getPlayerName(0)" is-defender="isDefender(0)"
+                    is-first-attacker="isFirstAttacker(0)"></player>
+            <div class="centerButtons readyWrapper" ng-if="data.myHand">
+                <span ng-if="!data.isStarted"
+                      class="button smallerButton {{data.isReady ?'clicked' :''}}"
+                      ng-click="readyClick()">Ready</span>
+                <span ng-if="isDefender(0) && data.flow.isCollectingPossible"
+                      class="button smallerButton{{data.flow.isDefenderCollecting ?' active' :''}}"
+                      ng-click="collect()">Collect</span>
+                <span ng-if="!isDefender(0) && data.flow.isDoneAttackingPossible"
+                      class="button smallerButton{{data.flow.doneAttackingUsers.indexOf(getPlayerName(0)) ?' active' :''}}"
+                      ng-click="doneAttacking()">Done</span>
+            </div>
+        </div>
 
         <my-hand ng-if="data.myHand" my-hand="data.myHand">
         </my-hand>
-        <div class="centerButtons">
-            <span ng-if="data.myHand && !data.isStarted" class="button smallerButton {{data.isReady ?'clicked' :''}}" ng-click="readyClick()">Ready</span>
-        </div>
 
-        <opp-hand ng-if="!data.myHand" cards-num="getPlayerCardsNum(0)" is-defender="isDefender(0)" is-first-attacker="isFirstAttacker(0)"></opp-hand>
+        <opp-hand ng-if="!data.myHand" cards-num="getPlayerCardsNum(0)" is-defender="isDefender(0)"
+                  is-first-attacker="isFirstAttacker(0)"></opp-hand>
     </div>
-    <div class="deckWrapper">
-        <deck deck-size="data.deckSize" ng-if="data.deckSize"></deck>
-        <card ng-if="data.strongCard" suit="data.strongCard.suit" rank="data.strongCard.rank" class="strongCard"></card>
+    <div class="deckWrapper" ng-if="data.deck && data.deck.size">
+        <deck ng-if="data.deck.size > 1" deck-size="data.deck.size"></deck>
+        <card suit="data.deck.strongCard.suit" rank="data.deck.strongCard.rank" class="strongCard"></card>
     </div>
 </div>

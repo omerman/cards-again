@@ -35,35 +35,36 @@ define([],function() {//<page></page>
 
                     var wrappedCallBack = function(callBackData) {
 
-                        if(callBackData) {
-                            if(callBackData.status === "auth_required") {
+                        window.setTimeout(function () {
+                            if (callBackData) {
+                                if (callBackData.status === "auth_required") {
 
-                                if(callBackAfterLogin) {
-                                    $scope.callBackAfterLogin = callBackAfterLogin;
+                                    if (callBackAfterLogin) {
+                                        $scope.callBackAfterLogin = callBackAfterLogin;
 
-                                    $scope.$apply(function () {
-                                        $location.path("/login");
-                                    });
+                                        $scope.$apply(function () {
+                                            $location.path("/login");
+                                        });
+                                    }
+                                    else {
+                                        console.log("address: " + address + "requires log in. supply 'callBackAfterLogin' for auto redirect to login page.");
+                                    }
+                                    return;
                                 }
-                                else {
-                                    console.log("address: "+address +"requires log in. supply 'callBackAfterLogin' for auto redirect to login page.");
+                                if (callBackData.error) {
+                                    if (callBackError) {
+                                        callBackError(callBackData);
+                                    }
+                                    else {
+                                        alert(callBackData.error);
+                                    }
+                                    return;
                                 }
-                                return;
                             }
-                            if(callBackData.error) {
-                                if(callBackError) {
-                                    callBackError(callBackData);
-                                }
-                                else {
-                                    alert(callBackData.error);
-                                }
-                                return;
+                            if (callBackSuccess) {
+                                callBackSuccess(callBackData);
                             }
-                        }
-                        if(callBackSuccess) {
-                            callBackSuccess(callBackData);
-                        }
-
+                        }, 0);
                     };
 
                     var func;

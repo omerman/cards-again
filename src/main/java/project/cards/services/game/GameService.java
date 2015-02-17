@@ -57,17 +57,16 @@ public abstract class GameService{
     public String createGame(String name) {
         String gId = "Game_"+(sequence++);
         games.put(gId,new Game(gId,name));
-        createFlow(gId);
         return gId;
     }
-
-    protected abstract void createFlow(String gId);
 
     public void startGame(String gId) {
 
         Game g = getGame(gId,true);
 
         getDeckService().createDeck(gId);
+	    getYackService().createYack(gId);
+	    getFlowService().createFlow(gId);
 
         Player p;
         for(String pId : g.getPlayerIds()) {
@@ -80,6 +79,8 @@ public abstract class GameService{
 
         g.setStarted(true);
     }
+
+	protected abstract void completeHand(String gId, int index);
 
     public List<String> getPlayersIds(String gId) {
         return getGame(gId,true).getPlayerIds();
@@ -111,35 +112,6 @@ public abstract class GameService{
         return getMaxPlayers() == getGame(gId,true).getPlayerIds().size();
     }
 
-    public JsonArray getJsonAllGames() {//TODO: cach.
-        JsonArray allGames = new JsonArray();
-        String gId;
-        Game g;
-        for(Map.Entry<String,Game> e : games.entrySet()) {
-            gId = e.getKey();
-            g = games.get(gId);
-            allGames.add(
-                    new JsonObject()
-                    .putString("name", g.getName())
-                    .putString("gId", gId)
-                    .putArray("players", new JsonArray(g.getPlayerIds()))
-            );
-        }
-        return allGames;
-    }
-
-    public JsonArray getJsonGamePlayers(String gId) {
-        JsonArray gamePlayers = new JsonArray();
-        Game g = getGame(gId,true);
-
-        List<String> playerIds = g.getPlayerIds();
-        for(String pId : playerIds) {
-            gamePlayers.add(getPlayerService().getJsonPlayer(gId,pId));
-        }
-
-        return gamePlayers;
-    }
-
     public Boolean isGameStarted(String gId) {
         Game g = getGame(gId,true);
         return g.isStarted();
@@ -163,6 +135,11 @@ public abstract class GameService{
         return true;
     }
 
+	public int getNextPlayerPos(String gId, int playerPos) {
+		int playerSize = getPlayersIds(gId).size();
+		return (playerPos + 1) % playerSize;
+	}
+
     public int getPlayerPosIdx(String gId, String pId) {
         if(null == pId) return -1;
 
@@ -176,6 +153,35 @@ public abstract class GameService{
         return -1;
     }
 
+	public JsonArray getJsonAllGames() {//TODO: cach.
+		JsonArray allGames = new JsonArray();
+		String gId;
+		Game g;
+		for(Map.Entry<String, Game> e : games.entrySet()) {
+			gId = e.getKey();
+			g = games.get(gId);
+			allGames.add(
+					new JsonObject()
+							.putString("name", g.getName())
+							.putString("gId", gId)
+							.putArray("players", new JsonArray(g.getPlayerIds()))
+			);
+		}
+		return allGames;
+	}
+
+	public JsonArray getJsonGamePlayers(String gId) {
+		JsonArray gamePlayers = new JsonArray();
+		Game g = getGame(gId, true);
+
+		List<String> playerIds = g.getPlayerIds();
+		for(String pId : playerIds) {
+			gamePlayers.add(getPlayerService().getJsonPlayer(gId, pId));
+		}
+
+		return gamePlayers;
+	}
+
     public JsonObject getJsonGameInfo(String gId) {
         boolean isGameStarted = isGameStarted(gId);
         JsonObject gameInfo = new JsonObject()
@@ -184,9 +190,9 @@ public abstract class GameService{
 
         if(isGameStarted) {
             gameInfo
-                    .putNumber("deckSize", getDeckService().getFakeSize(gId))
-                    .putObject("flowInfo",getFlowService().getJsonFlow(gId))
-                    .putArray("yackInfo", getYackService().getJsonYack(gId));
+		            .putObject("deckInfo", getDeckService().getJsonDeck(gId))
+		            .putObject("flowInfo", getFlowService().getJsonFlow(gId))
+		            .putArray("yackInfo", getYackService().getJsonYack(gId));
         }
 
         return gameInfo;

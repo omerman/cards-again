@@ -6,58 +6,58 @@ import java.util.Set;
 /**
  * Created by omerpr on 23/01/2015.
  */
-public class Player{
+public class Player {
 
-    private String pId;
-    private String gId;
-    private Set<String> cardIds;
-    private boolean isReady;
+	private String pId;
+	private String gId;
+	private Set<String> cardIds;
+	private boolean isReady;
 
-    public Player(String gId,String pId) {
-        setpId(pId);
-        setgId(gId);
-        setCardIds(new HashSet<String>());
-        setReady(false);
-    }
 
-    public void addCardId(String cardId) {
-        cardIds.add(cardId);
-    }
+	public Player(String gId, String pId) {
+		setpId(pId);
+		setgId(gId);
+		setCardIds(new HashSet<String>());
+		setReady(false);
+	}
 
-    public void removeCardId(String cardId) {
-        cardIds.remove(cardId);
-    }
+	public void addCardId(String cardId) {
+		cardIds.add(cardId);
+	}
 
-    public String getpId() {
-        return pId;
-    }
+	public void removeCardId(String cardId) {
+		cardIds.remove(cardId);
+	}
 
-    public void setpId(String pId) {
-        this.pId = pId;
-    }
+	public String getpId() {
+		return pId;
+	}
 
-    public void setCardIds(Set<String> cardIds) {
-        this.cardIds = cardIds;
-    }
+	public void setpId(String pId) {
+		this.pId = pId;
+	}
 
-    public Set<String> getCardIds() {
-        return cardIds;
-    }
+	public void setCardIds(Set<String> cardIds) {
+		this.cardIds = cardIds;
+	}
 
-    public String getgId() {
-        return gId;
-    }
+	public Set<String> getCardIds() {
+		return cardIds;
+	}
 
-    public void setgId(String gId) {
-        this.gId = gId;
-    }
+	public String getgId() {
+		return gId;
+	}
 
-    public boolean isReady() {
-        return isReady;
-    }
+	public void setgId(String gId) {
+		this.gId = gId;
+	}
 
-    public void setReady(boolean isReady) {
-        this.isReady = isReady;
-    }
+	public boolean isReady() {
+		return isReady;
+	}
 
+	public void setReady(boolean isReady) {
+		this.isReady = isReady;
+	}
 }

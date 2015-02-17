@@ -11,39 +11,44 @@ import java.util.Map;
 /**
  * Created by omerpr on 05/02/2015.
  */
-public abstract class FlowService<F extends Flow,A extends Action> {
-    protected Map<String,F> flows = new HashMap<>();
+public abstract class FlowService<F extends Flow, A extends Action> {
+	protected Map<String, F> flows = new HashMap<>();
 
-    public abstract void createFlow(String gId);
-    public abstract boolean isValidAction(String gId, A a);
-    protected abstract void doAction(String gId, A a);
-    protected abstract void increaseFlow(String gId);
-    protected abstract void endTurn(String gId);
+	public abstract void createFlow(String gId);
 
-    protected F getFlow(String gId) {
-        return flows.get(gId);
-    }
+	public abstract boolean isValidAction(String gId, A a);
 
-    public void requestAction(String gId,A a) {
-        Flow<A> f = getFlow(gId);
+	protected abstract void doAction(String gId, A a);
 
-        if(null != f) {
-            if (isValidAction(gId, a)) {
-                doAction(gId, a);
-            }
-            else {
-                //TODO: throw invalid
-            }
-        }
-        else {
-            //TODO: throw game flow doesnt exist.
-        }
-    }
+	protected abstract void initializeFlow(String gId);
 
-    public JsonObject getJsonFlow(String gId) {
-        JsonObject jsonFlow = new JsonObject();
-        Flow flow = getFlow(gId);
-        jsonFlow.putNumber("turnPosIndex",flow.getCurrentPlayerTurnIndex());
-        return jsonFlow;
-    }
+	protected void increaseFlow(String gId, int nextPlayerIndex) {
+		getFlow(gId).setCurrentPlayerTurnIndex(nextPlayerIndex);
+	}
+
+	protected F getFlow(String gId) {
+		return flows.get(gId);
+	}
+
+	public void requestAction(String gId, A a) {
+		Flow<A> f = getFlow(gId);
+
+		if(null != f) {
+			if(isValidAction(gId, a)) {
+				doAction(gId, a);
+			} else {
+				throw new RuntimeException("This action is not allowed.");
+			}
+		} else {
+			throw new RuntimeException("Flow does not exist.");
+		}
+	}
+
+
+	public JsonObject getJsonFlow(String gId) {
+		JsonObject jsonFlow = new JsonObject();
+		Flow flow = getFlow(gId);
+		jsonFlow.putNumber("turnPosIndex", flow.getCurrentPlayerTurnIndex());
+		return jsonFlow;
+	}
 }

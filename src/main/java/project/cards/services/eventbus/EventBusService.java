@@ -1,5 +1,6 @@
 package project.cards.services.eventbus;
 
+import com.hazelcast.util.StringUtil;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.EventBus;
 import org.vertx.java.core.eventbus.Message;
@@ -181,7 +182,6 @@ public class EventBusService {
 
                     if(gameService.isReadyToStart(gId)) {
                         gameService.startGame(gId);
-                        YackServiceImpl.getInstance().createYack(gId);
                         publishGameStarted(gId);
                         publishGameInfoUpdate(gId);
                     }
@@ -214,21 +214,33 @@ public class EventBusService {
                         durakAction.setAnswerCardId(DeckServiceImpl.getInstance().getCardId(answerCard));
                         break;
                     case DurakAction.Types.COLLECT:
-                        break;
-                    default:
+	                case DurakAction.Types.DONE_ATTACKING:
+		                break;
+	                default:
                         logger.info("TODO: handle me.. no attack type specified.");
+		                return;
                 }
 
-                FlowServiceImpl.getInstance().requestAction(gId,durakAction);
-                publishGameInfoUpdate(gId);
-                replyMyHand(event,gId,pId);
+	            try {
+		            FlowServiceImpl.getInstance().requestAction(gId, durakAction);
+	            } catch(Exception e) {
+		            replyMyHandWithError(event, gId, pId, e.getMessage());//reply with the error
+	            }
+	            publishGameInfoUpdate(gId);//no errors :).
+	            replyMyHand(event, gId, pId);
             }
         });
     }
 
     private void replyMyHand(Message<JsonObject> event, String gId, String pId) {
-        event.reply(new JsonObject().putArray("myHand", gameService.getPlayerService().getJsonPlayerCards(gId, pId)));
+	    event.reply(new JsonObject().putArray("myHand", gameService.getPlayerService().getJsonPlayerCards(gId, pId)));
     }
+
+	private void replyMyHandWithError(Message<JsonObject> event, String gId, String pId, String error) {
+		JsonObject myHand = new JsonObject().putArray("myHand", gameService.getPlayerService().getJsonPlayerCards(gId, pId));
+		myHand.putString("error", error);
+		event.reply(myHand);
+	}
 
     private void replyError(Message<JsonObject> event,Exception e) {
         event.reply(new JsonObject().putString("error",e.getLocalizedMessage()));
@@ -249,7 +261,11 @@ public class EventBusService {
     }
 
     private void publishGameInfoUpdate(String gId) {
-        eventBus.publish("game.info.update."+gId, gameService.getJsonGameInfo(gId));
+	    try {
+		    eventBus.publish("game.info.update." + gId, gameService.getJsonGameInfo(gId));
+	    } catch(Exception e) {
+		    eventBus.publish("game.info.update." + gId, new JsonObject().putString("error", e.getMessage()));
+	    }
     }
 
     public void publishGamesList() {

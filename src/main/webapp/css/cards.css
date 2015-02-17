@@ -16,54 +16,62 @@
     box-shadow: .2em .2em .5em #333;
     height: 88px;
 }
-.opponent .card,.deck .card {
+
+.opponent .card, .deck .card {
     text-indent: -4000px;
     background-color: #ccc;
     background-repeat: repeat;
     background-image: url(data:image/gif;base64,R0lGODlhJAAkAJEAAOjFsezdztOKbL5QKCH5BAAAAAAALAAAAAAkACQAAAL/HC4RAqm/mmLHyHmAbczB11Ea8ombJKSgKo6Z17pXFznmS1JptiX0z3vVhpEKDoUIkoa0olGIUeZUk1RI6Yn2mh/FDAt6frOrRRTqXPpsVLYugzxaVy+YcBdnoWPZOT0E4eckQtZFZBjWoHixQFWl6Nhol6R2p1Okt5TGaEWZA6fjiMdhZgPHeWrTWGVq+jTZg1HYyAEWKLYzmyiGKoUimilz+YYryyTlg5RcDJSAbNx0Q7lMcbIGEyzTK8zVdfVaImzs/QV+prYqWWW2ObkoOApM/Em/rUlIm7fijs8a2EEKEaZ3AsMUgneEU6RcpJbZ27aGHkAO2Ors8xQH1IR0Bn5YnOtVAAA7); /* image is "Pattern 069" from http://www.squidfingers.com/patterns/ */
-    background-image: -moz-repeating-linear-gradient(34% 6% 135deg,#0F1E59, #75A1BF, #3E3E63 50%);
-    background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#3c3), color-stop(0.4, #363), to(#030));
+    background-image: -moz-repeating-linear-gradient(34% 6% 135deg, #0F1E59, #75A1BF, #3E3E63 50%);
+    background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#3BA), color-stop(0.4, #345), to(#000));
     /* yes, it's intentional that Mozilla, Webkit, Opera and IE all will get different backgrounds ... why not? :) */
 }
-
-
 
 /*COLORS*/
 
 .card.suit-4 {
     color: #f00 !important;
 }
+
 .playingCards.fourColours .card.suit-4 {
     color: #00f !important;
 }
+
 [lang=de] .playingCards.fourColours .card.suit-4 {
     color: #f60 !important;
 }
+
 .card.suit-3 {
     color: #f00 !important;
 }
+
 .card.suit-1 {
     color: #000 !important;
 }
+
 [lang=de] .playingCards.fourColours .card.suit-1 {
     color: #090 !important;
 }
+
 .card.suit-2 {
     color: #000 !important;
 }
+
 .playingCards.fourColours .card.suit-2 {
     color: #090 !important;
 }
+
 [lang=de] .playingCards.fourColours .card.suit-2 {
     color: #000 !important;
 }
+
 .card.joker {
     color: #000 !important;
 }
+
 .card.joker.big {
     color: #f00 !important;
 }
-
 
 /* inner bits
 ********************************************************************/
@@ -76,8 +84,10 @@
     line-height: 1;
     text-align: left;
 }
+
 .card .rank {
 }
+
 .card .suit {
     line-height: .7;
 }
@@ -87,6 +97,7 @@
     margin-top: -.05em;
     font: inherit;
 }
+
 .playingCards.simpleCards .card input,
 .card.rank-11 input,
 .card.rank-12 input,
@@ -94,6 +105,7 @@
 .card.rank-14 input {
     margin-top: 2.4em;
 }
+
 .playingCards.inText .card input {
     margin-top: 0;
 }
@@ -101,25 +113,72 @@
 /* different rank letters for different languages */
 .card .rank:after,
 .card.joker .rank:before {
-    display:block;
+    display: block;
     background: transparent;
     letter-spacing: -.125em;
     white-space: pre;
-    line-height: .9;
+    line-height: .45;
     font-size: 100%;
     word-spacing: -.05em;
 }
 
-.card.rank-11 .rank:after {
+.card .rank:before {
+    line-height: 0.9;
+}
+
+.card.rank-1 .rank:before {
+    content: "1";
+}
+
+.card.rank-2 .rank:before {
+    content: "2";
+}
+
+.card.rank-3 .rank:before {
+    content: "3";
+}
+
+.card.rank-4 .rank:before {
+    content: "4";
+}
+
+.card.rank-5 .rank:before {
+    content: "5";
+}
+
+.card.rank-6 .rank:before {
+    content: "6";
+}
+
+.card.rank-7 .rank:before {
+    content: "7";
+}
+
+.card.rank-8 .rank:before {
+    content: "8";
+}
+
+.card.rank-9 .rank:before {
+    content: "9";
+}
+
+.card.rank-10 .rank:before {
+    content: "10";
+}
+
+.card.rank-11 .rank:before {
     content: "J";
 }
-.card.rank-12 .rank:after {
+
+.card.rank-12 .rank:before {
     content: "Q";
 }
-.card.rank-13 .rank:after {
+
+.card.rank-13 .rank:before {
     content: "K";
 }
-.card.rank-14 .rank:after {
+
+.card.rank-14 .rank:before {
     content: "A";
 }
 
@@ -127,11 +186,13 @@
 .card.joker .rank {
     position: absolute;
 }
+
 .card.joker .rank:before {
     content: "\2605";
     top: 0;
     left: 0;
 }
+
 .card.joker .suit {
     text-indent: -9999px;
 }
@@ -141,171 +202,61 @@
     display: block;
     text-align: center;
     white-space: pre;
-    line-height: .9;
+    line-height: .45;
     font-size: 100%;
     word-spacing: -.05em;
 }
 
-/* make the hearts and clubs symbols fit, because they are a bit bigger than the others */
-.card.suit-3 .suit:after {
-    word-spacing: -.15em;
-}
-.card.suit-3.rank-10 .suit:after {
-    word-spacing: -.05em;
-    letter-spacing: -.1em;
-}
-.card.suit-2.rank-10 .suit:after {
-    word-spacing: -.15em;
+/* spades */
+.card.suit-1 .suit:before {
+    content: "\2660";
 }
 
-/* 8, 9, 10 are the most crowded */
-.card.rank-8 .suit:after,
-.card.rank-9 .suit:after {
-    letter-spacing: -.075em;
+.card.suit-1 .suit:after {
+    content: "\A\2660\A\00A0\A\00A0";
 }
-.card.rank-10 .suit:after {
-    letter-spacing: -.1em;
+
+.card.suit-1 .rank.upsideDown:after {
+    content: "\2660";
 }
+
+/* clubs */
+.card.suit-2 .suit:before {
+    content: "\2663";
+}
+
 .card.suit-2 .suit:after {
-    letter-spacing: -.125em;
+    content: "\A\2663\A\00A0\A\00A0";
 }
 
-/*____________ symbols in the middle (suits, full) ____________*/
+.card.suit-2 .rank.upsideDown:after {
+    content: "\2663";
+}
+
+/* hearts */
+.card.suit-3 .suit:before {
+    content: "\2665";
+}
+
+.card.suit-3 .suit:after {
+    content: "\A\2665\A\00A0\A\00A0";
+}
+
+.card.suit-3 .rank.upsideDown:after {
+    content: "\2665";
+}
 
 /* diamonds */
-.card.rank-2.suit-4 .suit:after {
-    content: "\2666 \A\A\2666";
+.card.suit-4 .suit:before {
+    content: "\2666";
 }
-.card.rank-3.suit-4 .suit:after {
-    content: "\2666 \A\2666 \A\2666";
+
+.card.suit-4 .suit:after {
+    content: "\A\2666\A\00A0\A\00A0";
 }
-.card.rank-4.suit-4 .suit:after {
-    content: "\2666\00A0\00A0\00A0\2666 \A\A\2666\00A0\00A0\00A0\2666";
+
+.card.suit-4 .rank.upsideDown:after {
+    content: "\2666";
 }
-.card.rank-5.suit-4 .suit:after {
-    content: "\2666\00A0\00A0\00A0\2666 \A\2666 \A\2666\00A0\00A0\00A0\2666";
-}
-.card.rank-6.suit-4 .suit:after {
-    content: "\2666\00A0\00A0\00A0\2666 \A\2666\00A0\00A0\00A0\2666 \A\2666\00A0\00A0\00A0\2666";
-}
-.card.rank-7.suit-4 .suit:after {
-    content: "\2666\00A0\00A0\2666 \A\2666\00A0\2666\00A0\2666 \A\2666\00A0\00A0\2666";
-}
-.card.rank-8.suit-4 .suit:after {
-    content: "\2666\00A0\2666\00A0\2666 \A\2666\00A0\00A0\2666 \A\2666\00A0\2666\00A0\2666";
-}
-.card.rank-9.suit-4 .suit:after {
-    content: "\2666\00A0\2666\00A0\2666 \A\2666\00A0\2666\00A0\2666 \A\2666\00A0\2666\00A0\2666";
-}
-.card.rank-10.suit-4 .suit:after {
-    content: "\2666\00A0\2666\00A0\2666 \A\2666\00A0\2666\00A0\2666\00A0\2666 \A\2666\00A0\2666\00A0\2666";
-}
-.card.rank-11.suit-4 .suit:after,
-.card.rank-12.suit-4 .suit:after,
-.card.rank-13.suit-4 .suit:after,
-.card.rank-14.suit-4 .suit:after {
-    content: "\A\2666\A\00A0";
-}
-/* hearts */
-.card.rank-2.suit-3 .suit:after {
-    content: "\2665 \A\A\2665";
-}
-.card.rank-3.suit-3 .suit:after {
-    content: "\2665 \A\2665 \A\2665";
-}
-.card.rank-4.suit-3 .suit:after {
-    content: "\2665\00A0\00A0\00A0\2665 \A\A\2665\00A0\00A0\00A0\2665";
-}
-.card.rank-5.suit-3 .suit:after {
-    content: "\2665\00A0\00A0\00A0\2665 \A\2665 \A\2665\00A0\00A0\00A0\2665";
-}
-.card.rank-6.suit-3 .suit:after {
-    content: "\2665\00A0\00A0\00A0\2665 \A\2665\00A0\00A0\00A0\2665 \A\2665\00A0\00A0\00A0\2665";
-}
-.card.rank-7.suit-3 .suit:after {
-    content: "\2665\00A0\00A0\2665 \A\2665\00A0\2665\00A0\2665 \A\2665\00A0\00A0\2665";
-}
-.card.rank-8.suit-3 .suit:after {
-    content: "\2665\00A0\2665\00A0\2665 \A\2665\00A0\00A0\2665 \A\2665\00A0\2665\00A0\2665";
-}
-.card.rank-9.suit-3 .suit:after {
-    content: "\2665\00A0\2665\00A0\2665 \A\2665\00A0\2665\00A0\2665 \A\2665\00A0\2665\00A0\2665";
-}
-.card.rank-10.suit-3 .suit:after {
-    content: "\2665\00A0\2665\00A0\2665 \A\2665\00A0\2665\00A0\2665\00A0\2665 \A\2665\00A0\2665\00A0\2665";
-}
-.card.rank-11.suit-3 .suit:after,
-.card.rank-12.suit-3 .suit:after,
-.card.rank-13.suit-3 .suit:after,
-.card.rank-14.suit-3 .suit:after {
-    content: "\A\2665\A\00A0";
-}
-/* spades */
-.card.rank-2.suit-1 .suit:after {
-    content: "\2660 \A\A\2660";
-}
-.card.rank-3.suit-1 .suit:after {
-    content: "\2660 \A\2660 \A\2660";
-}
-.card.rank-4.suit-1 .suit:after {
-    content: "\2660\00A0\00A0\00A0\2660 \A\A\2660\00A0\00A0\00A0\2660";
-}
-.card.rank-5.suit-1 .suit:after {
-    content: "\2660\00A0\00A0\00A0\2660 \A\2660 \A\2660\00A0\00A0\00A0\2660";
-}
-.card.rank-6.suit-1 .suit:after {
-    content: "\2660\00A0\00A0\00A0\2660 \A\2660\00A0\00A0\00A0\2660 \A\2660\00A0\00A0\00A0\2660";
-}
-.card.rank-7.suit-1 .suit:after {
-    content: "\2660\00A0\00A0\2660 \A\2660\00A0\2660\00A0\2660 \A\2660\00A0\00A0\2660";
-}
-.card.rank-8.suit-1 .suit:after {
-    content: "\2660\00A0\2660\00A0\2660 \A\2660\00A0\00A0\2660 \A\2660\00A0\2660\00A0\2660";
-}
-.card.rank-9.suit-1 .suit:after {
-    content: "\2660\00A0\2660\00A0\2660 \A\2660\00A0\2660\00A0\2660 \A\2660\00A0\2660\00A0\2660";
-}
-.card.rank-10.suit-1 .suit:after {
-    content: "\2660\00A0\2660\00A0\2660 \A\2660\00A0\2660\00A0\2660\00A0\2660 \A\2660\00A0\2660\00A0\2660";
-}
-.card.rank-11.suit-1 .suit:after,
-.card.rank-12.suit-1 .suit:after,
-.card.rank-13.suit-1 .suit:after,
-.card.rank-14.suit-1 .suit:after {
-    content: "\A\2660\A\00A0";
-}
-/* clubs */
-.card.rank-2.suit-2 .suit:after {
-    content: "\2663 \A\A\2663";
-}
-.card.rank-3.suit-2 .suit:after {
-    content: "\2663 \A\2663 \A\2663";
-}
-.card.rank-4.suit-2 .suit:after {
-    content: "\2663\00A0\00A0\00A0\2663 \A\A\2663\00A0\00A0\00A0\2663";
-}
-.card.rank-5.suit-2 .suit:after {
-    content: "\2663\00A0\00A0\00A0\2663 \A\2663 \A\2663\00A0\00A0\00A0\2663";
-}
-.card.rank-6.suit-2 .suit:after {
-    content: "\2663\00A0\00A0\00A0\2663 \A\2663\00A0\00A0\00A0\2663 \A\2663\00A0\00A0\00A0\2663";
-}
-.card.rank-7.suit-2 .suit:after {
-    content: "\2663\00A0\00A0\2663 \A\2663\00A0\2663\00A0\2663 \A\2663\00A0\00A0\2663";
-}
-.card.rank-8.suit-2 .suit:after {
-    content: "\2663\00A0\2663\00A0\2663 \A\2663\00A0\00A0\2663 \A\2663\00A0\2663\00A0\2663";
-}
-.card.rank-9.suit-2 .suit:after {
-    content: "\2663\00A0\2663\00A0\2663 \A\2663\00A0\2663\00A0\2663 \A\2663\00A0\2663\00A0\2663";
-}
-.card.rank-10.suit-2 .suit:after {
-    content: "\2663\00A0\2663\00A0\2663 \A\2663\00A0\2663\00A0\2663\00A0\2663 \A\2663\00A0\2663\00A0\2663";
-}
-.card.rank-11.suit-2 .suit:after,
-.card.rank-12.suit-2 .suit:after,
-.card.rank-13.suit-2 .suit:after,
-.card.rank-14.suit-2 .suit:after {
-    content: "\A\2663\A\00A0";
-}
+
 

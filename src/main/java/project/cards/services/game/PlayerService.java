@@ -5,6 +5,7 @@ import org.vertx.java.core.json.JsonObject;
 import project.cards.objects.impl.Player;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -102,7 +103,6 @@ public abstract class PlayerService {
     public JsonObject getJsonPlayer(String gId,String pId) {
         Player p = getPlayer(gId,pId,true);
         return new JsonObject()
-                .putString("pId", pId)
                 .putString("userName",getPlayerUserName(pId))
                 .putNumber("cardsNum", p.getCardIds().size());
     }
@@ -156,4 +156,10 @@ public abstract class PlayerService {
     public int getCardsSize(String gId, String pId) {
         return getPlayer(gId,pId,true).getCardIds().size();
     }
+
+	public void addCardsIds(String gId, String pId, List<String> cardsIds, boolean thrower) {
+		for(String cardId : cardsIds) {
+			addCardId(gId, pId, cardId, thrower);
+		}
+	}
 }

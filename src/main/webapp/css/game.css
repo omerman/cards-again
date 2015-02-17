@@ -1,79 +1,84 @@
 /*game flex*/
 
 .game {
-	display: flex;
-	height: 100%;
-	flex-flow: column wrap;
-	width: 100%;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+    display: flex;
+    height: 100%;
+    flex-flow: row wrap;
+    width: 100%;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.game > * {
+    flex-basis: 100%;
 }
 
 /*game verticle/horizontal hand containers config */
 
 .gameContainer {
-    height:100%;
+    height: 100%;
 }
 
 .game .horizontal {
-	order: 1;
-	flex-basis: 24%;
-	width: 100%;
+    order: 1;
+    height: 20%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
 }
 
-
-.game .vertical{
-	order: 2;
+.game .vertical {
+    order: 2;
     display: flex;
-    flex-flow:row-reverse;
+    flex-flow: row;
     justify-content: space-between;
-	flex-basis: 42%;
+    flex-basis: 10%;
+    height: 40%;
 }
 
 .game .horizontal.closerPlayer {
-	order: 4;
-}
-
-.game .vertical > * {
-    height: 100%;
+    order: 4;
 }
 
 /* hands config */
 
 .game .hand {
-	display: flex;
-	justify-content: center;
-    height:100%
+    display: flex;
+    justify-content: center;
+    flex-basis: 100%;
 }
 
 .game .horizontal .hand {
-	flex-flow: row;
+    flex-flow: row;
+    margin-left: 30px;
 }
 
 .game .vertical .hand {
-	flex-flow: column;
+    flex-flow: row wrap;
+    margin-top: 30px;
 }
 
-.game .vertical > *{
-	align-self:center;
+.game .vertical > * {
+    align-self: center;
 }
-
 
 /*Cards config*/
 
 .game .horizontal .hand .card {
-	width:60px;
-	height:90px;
-	margin-left:-50px;
+    width: 60px;
+    height: 90px;
+    margin-left: -30px;
 }
 
 .game .yack .card {
-    width:60px;
-    height:90px;
+    width: 60px;
+    height: 90px;
 }
 
 .game .yack .card.backCard[answered=true] {
@@ -81,47 +86,46 @@
 }
 
 .game .vertical .hand .card {
-	width:90px;
-	height:60px;
-	margin-top:-55px;
+    width: 90px;
+    height: 60px;
+    margin-top: -30px;
 }
 
 .game .horizontal .myHand .card {
-	cursor:pointer;
-	margin-left:-30px;
+    cursor: pointer;
 }
-.game .horizontal .myHand .card:hover,.game .yackPair .backCard:hover{
-	top:-15px;
+
+.game .horizontal .myHand .card:hover, .game .yackPair .backCard:hover {
+    top: -15px;
 }
-.game .horizontal .myHand .card:active,.game .yackPair .backCard:active {
-    z-index:1;
+
+.game .horizontal .myHand .card:active, .game .yackPair .backCard:active {
+    z-index: 2;
 }
 
 /*Players config */
-.game .vertical .playerWrapper.rightPlayer {
-    position: relative;
-    left: 80px;
-    /*transform: rotate(-90deg);*/
+.game .playerWrapper {
+    display: flex;
+    flex-basis: 100%;
+    justify-content: center;
+    height: auto;
 }
-.game .vertical .playerWrapper.leftPlayer {
-    position: relative;
 
-    right: 80px;
-    /*transform: rotate(90deg);*/
+.game .playerWrapper .centerButtons {
+    position: absolute;
 }
 
 /*deck..*/
 
 .deckWrapper {
     order: 5;
-    flex-basis: 10%;
+    align-self: flex-end;
 }
 
 .deckWrapper .card.strongCard {
     width: 60px;
     height: 90px;
     position: relative;
-    z-index: 1;
     left: 65px;
     bottom: 0px;
     transform: rotate(90deg);
@@ -131,10 +135,8 @@
     display: flex;
     flex-flow: row;
     position: absolute;
-    z-index: 2;
+    z-index: 1;
 }
-
-
 
 .deck .card {
     width: 60px;
@@ -144,14 +146,17 @@
 
 /* yack */
 .yack {
+    order: 2;
+    flex-basis: 40%;
+    height: 40%;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
     flex-grow: 1;
-    min-height: 214px;;
     background: #FFFFC9;
     align-items: center;
 }
+
 .yack > * {
     display: flex;
     flex-flow: column nowrap;

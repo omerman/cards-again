@@ -1,47 +1,47 @@
-define([],function() {//<creategame></creategame>
-    return function(){
+define([], function () {//<creategame></creategame>
+    return function () {
         return {
             restrict: 'E',
             replace: true,
             templateUrl: "views/createGame.html",
-            controller: function($scope) {
+            controller: function ($scope) {
 
                 $scope.data = {
-                    name:""
+                    name: ""
                 };
                 $scope.max = {
-                    name:15
+                    name: 15
                 };
                 $scope.message = {
-                    name:""
+                    name: ""
                 };
 
-                $scope.create = function() {
-                  if($scope.validate()) {
+                $scope.create = function () {
+                    if ($scope.validate()) {
 
-                    $scope.toServer({
+                        $scope.toServer({
                             address: "game.create.request",
                             action: $scope.ACTIONS.SEND,
                             data: $scope.data,
-                        callBackSuccess: function(callBackData){
-                            if (callBackData && callBackData.gId) {
-                                $scope.changeLocation("/play/" + callBackData.gId);
+                            callBackSuccess: function (callBackData) {
+                                if (callBackData && callBackData.gId) {
+                                    $scope.changeLocation("/play/" + callBackData.gId);
+                                }
+                            },
+                            callBackAfterLogin: function (isLoggedIn) {
+                                if (isLoggedIn) {
+                                    $scope.create();
+                                }
+                                else {
+                                    console.log("Could not login..");//TODO:handle me
+                                }
                             }
-                        },
-                        callBackAfterLogin: function(isLoggedIn) {
-                            if(isLoggedIn) {
-                                $scope.create();
-                            }
-                            else {
-                                console.log("Could not login..");
-                            }
-                        }
-                    });
-                  }
+                        });
+                    }
                 };
 
-                $scope.validate = function() {
-                    return !($scope.message.name = $scope.data.name ?"" :true);
+                $scope.validate = function () {
+                    return !($scope.message.name = $scope.data.name ? "" : true);
                 }
 
             }

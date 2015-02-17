@@ -75,6 +75,11 @@ public class YackServiceImpl extends YackService<DurakYack>{
         return jsonYack;
     }
 
+	public int getBackCardsSize(String gId) {
+		List<DurakYackPair> yackPairs = getYack(gId).getYack();
+		return yackPairs.size();
+	}
+
     public int getFrontCardsSize(String gId) {
         List<DurakYackPair> yackPairs = getYack(gId).getYack();
         int counterFrontCards = 0;

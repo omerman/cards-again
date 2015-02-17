@@ -36,6 +36,16 @@ public class GameServiceImpl extends GameService{
         return instance;
     }
 
+	@Override
+	protected void completeHand(String gId, int index) {
+		int initialCardsNumber = getInitialCardsNum();
+		String pId = getPlayerPId(gId, index);
+
+		while(!DeckServiceImpl.getInstance().isEmpty(gId) && PlayerServiceImpl.getInstance().getCardsSize(gId, pId) < initialCardsNumber) {
+			PlayerServiceImpl.getInstance().addCardId(gId, pId, DeckServiceImpl.getInstance().deal(gId), false);
+		}
+	}
+
     @Override
     public DeckService getDeckService() {
         return DeckServiceImpl.getInstance();
@@ -58,11 +68,6 @@ public class GameServiceImpl extends GameService{
     }
 
     @Override
-    protected void createFlow(String gId) {
-        getFlowService().createFlow(gId);
-    }
-
-    @Override
     protected int getInitialCardsNum() {
         return 6;
     }
@@ -75,19 +80,6 @@ public class GameServiceImpl extends GameService{
     @Override
     protected int getMinimumPlayers() {
         return 2;
-    }
-
-    @Override
-    public JsonObject getJsonGameInfo(String gId) {
-
-        JsonObject gameInfo = super.getJsonGameInfo(gId);
-
-        boolean isGameStarted = isGameStarted(gId);
-        if(isGameStarted) {
-            gameInfo.putObject("strongCard", DeckServiceImpl.getInstance().getJsonStrongCard(gId));
-        }
-
-        return gameInfo;
     }
 
 }

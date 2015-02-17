@@ -32,9 +32,13 @@ public abstract class YackService<Y extends Yack> {
             return getCards(gId);
         }
         finally {
-            getYack(gId).clear();
+	        clearCards(gId);
         }
     }
+
+	public void clearCards(String gId) {
+		getYack(gId).clear();
+	}
 
     public int getYackSize(String gId) {
         return getYack(gId).size();

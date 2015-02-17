@@ -13,42 +13,48 @@ import java.util.Map;
  */
 public class DeckServiceImpl extends DeckService {
 
-    private static DeckServiceImpl instance = null;
-    private Map<String,Integer> gamesToStrongCardSuits;
+	private static DeckServiceImpl instance = null;
+	private Map<String, Integer> gamesToStrongCardSuits;
 
 
-    private DeckServiceImpl() {
-        gamesToStrongCardSuits = new HashMap<>();
-    }
+	private DeckServiceImpl() {
+		gamesToStrongCardSuits = new HashMap<>();
+	}
 
-    @Override
-    public void createDeck(String gId) {
-        super.createDeck(gId);
-        String strongCardId = deal(gId);
-        getDeck(gId).add(strongCardId);
-        gamesToStrongCardSuits.put(gId,Card.getById(strongCardId).getSuit());
-    }
+	@Override
+	public void createDeck(String gId) {
+		super.createDeck(gId);
+		String strongCardId = deal(gId);
+		getDeck(gId).add(strongCardId);
+		gamesToStrongCardSuits.put(gId, Card.getById(strongCardId).getSuit());
+	}
 
-    public static DeckServiceImpl getInstance() {
-        if(null != instance) {
-            return instance;
-        }
-        synchronized (DeckServiceImpl.class) {
-            if(null == instance) {
-                instance = new DeckServiceImpl();
-            }
-        }
+	public static DeckServiceImpl getInstance() {
+		if(null != instance) {
+			return instance;
+		}
+		synchronized(DeckServiceImpl.class) {
+			if(null == instance) {
+				instance = new DeckServiceImpl();
+			}
+		}
 
-        return instance;
-    }
+		return instance;
+	}
 
-    public JsonObject getJsonStrongCard(String gId) {
-        Deck d = getDeck(gId);
-        return this.getJsonCard(d.get(d.size()-1));
-    }
+	public JsonObject getJsonStrongCard(String gId) {
+		Deck d = getDeck(gId);
+		return this.getJsonCard(d.get(d.size() - 1));
+	}
 
-    public boolean isStrongCard(String gId,Card card) {
-        return gamesToStrongCardSuits.get(gId) == card.getSuit();
-    }
+	public boolean isStrongCard(String gId, Card card) {
+		return gamesToStrongCardSuits.get(gId) == card.getSuit();
+	}
+
+	@Override
+	public JsonObject getJsonDeck(String gId) {
+		return new JsonObject().putNumber("size", getFakeSize(gId))
+				.putObject("strongCard", getJsonStrongCard(gId));
+	}
 
 }
