@@ -16,7 +16,7 @@ define([], function () {//<game></game>
 
                 $scope.setGameData = function (game) {
                     if (game) {
-                        var prevDeckSize = $scope.data.size;
+                        var prevDeckSize = $scope.data.deck.size;
                         var wasITheDefender = $scope.isDefender(0);
                         $scope.data.isStarted = game.isStarted;
                         $scope.data.players = game.players;
@@ -28,10 +28,15 @@ define([], function () {//<game></game>
                         // and I've had a hand,
                         // and (it needs to be completed
                         // or I was the defender and I have collected the cards which means I'm not the first attacker.)
+                        /*if($scope.data.yackInfo) {
+                         console.log($scope.data.yackInfo);
+                         console.log()
+                         }*/
                         if ($scope.data.yackInfo && !$scope.data.yackInfo.length &&
                             prevDeckSize > 0 &&
                             $scope.data.myHand &&
-                            ($scope.data.myHand.size() < 6 || (wasITheDefender && !$scope.isFirstAttacker(0)))) {
+                            ($scope.data.myHand.length < 6 || (wasITheDefender && !$scope.isFirstAttacker(0)))) {
+                            console.log("fetch my hand");
                             $scope.getMyHand();
                         }
                     }

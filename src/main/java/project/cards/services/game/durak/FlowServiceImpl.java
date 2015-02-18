@@ -7,12 +7,10 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
-import project.cards.objects.Flow;
 import project.cards.objects.durak.DurakAction;
 import project.cards.objects.durak.DurakFlow;
 import project.cards.objects.impl.Card;
 import project.cards.services.game.FlowService;
-import project.cards.services.game.PlayerService;
 
 import java.util.ArrayList;
 
@@ -97,10 +95,14 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 			int initiatorPlayerPosIndex = GameServiceImpl.getInstance().getPlayerPosIdx(gId, initiatorPId);
 			int currentTurnIndex = f.getCurrentPlayerTurnIndex();
 			String targetPId = getCurrentDefenderPId(gId);
-			String attackingCardId = durakAction.getAttackCardId();
+			String attackingCardId;
 			switch(durakAction.getType()) {
 				case DurakAction.Types.ATTACK:
-
+					attackingCardId = durakAction.getAttackCardId();
+					//first validate attacker owns the card he attacks with.
+					if(!PlayerServiceImpl.getInstance().isHavingCardId(gId, initiatorPId, attackingCardId)) {
+						return false;
+					}
 					/**
 					 * The Attack action is valid when :
 					 *
@@ -129,42 +131,41 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 									&&
 									!isMaxAttackExceeded(gId));
 				case DurakAction.Types.ANSWER:
-
+					attackingCardId = durakAction.getAttackCardId();
 					String answeringCardId = durakAction.getAnswerCardId();
 					Card answeringCard = Card.getById(answeringCardId);
 					Card attackingCard = Card.getById(attackingCardId);
 
+					//first validate defender owns the card he defends with.
+					if(!PlayerServiceImpl.getInstance().isHavingCardId(gId, initiatorPId, answeringCardId)) {
+						return false;
+					}
+
 					/**
 					 * The Answer action is valid when :
 					 *
-					 *      part 1 (mandatoryCond):
-					 *      the initiator of the attack is targeted.
+					 *      the initiator of the attack is targeted(check that the defender actually is the defender....).
 					 *      and
 					 *      attacking card is not empty
 					 *      and
 					 *      answering card is not empty.
+					 *      and
+					 *      card is not already answered on!
+					 *      (if same suit, validate the answer is stronger.
+					 *      otherwise, check if the player answered with a strong card.)
 					 */
 
-					boolean mandatoryCond = initiatorPId.equals(targetPId)
+					return initiatorPId.equals(targetPId)
 							&&
 							!StringUtil.isNullOrEmpty(attackingCardId)
 							&&
-							!StringUtil.isNullOrEmpty(answeringCardId);
-
-					if(mandatoryCond) {
-						/**
-						 * part 2
-						 * if same suit, validate the answer is stronger.
-						 * otherwise, check if the player answered with a strong card.
-						 */
-						boolean isStrongerAnswer = answeringCard.compareTo(attackingCard) > 0;
-						boolean isAnsweredWithStrongCard = DeckServiceImpl.getInstance().isStrongCard(gId, answeringCard);
-						if(answeringCard.getSuit() == attackingCard.getSuit()) {
-							return isStrongerAnswer;
-						}
-						return isAnsweredWithStrongCard;
-					}
-					return false;
+							!StringUtil.isNullOrEmpty(answeringCardId)
+							&&
+							!YackServiceImpl.getInstance().isBackCardAnswered(gId, answeringCardId, true)
+							&&
+							(answeringCard.getSuit() == attackingCard.getSuit()
+									?answeringCard.compareTo(attackingCard) > 0
+									:DeckServiceImpl.getInstance().isStrongCard(gId, answeringCard));
 
 				case DurakAction.Types.COLLECT:
 					return initiatorPId.equals(targetPId)
@@ -172,7 +173,6 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 							isCollectingPossible(gId);
 
 				case DurakAction.Types.DONE_ATTACKING:
-					logger.info("HI! AND WTF?");
 					return !initiatorPId.equals(targetPId)
 							&&
 							isDoneAttackingPossible(gId);
@@ -194,16 +194,12 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 		return getFlow(gId).isDefenderCollecting() || isDefenseDone(gId);
 	}
 
-	private boolean isAttackOver(String gId) {
-		return true;
-	}
-
 	private boolean isMaxAttackExceeded(String gId) {
 		String targetPId = getCurrentDefenderPId(gId);
 		int currentYackSize = YackServiceImpl.getInstance().getYackSize(gId);
 		return YackServiceImpl.MAX_YACK_SIZE == currentYackSize
 				||
-				PlayerServiceImpl.getInstance().getCardsSize(gId, targetPId) == currentYackSize;
+				PlayerServiceImpl.getInstance().getCardsSize(gId, targetPId) == (YackServiceImpl.getInstance().getFrontCardsSize(gId) - YackServiceImpl.getInstance().getBackCardsSize(gId));
 	}
 
 	@Override

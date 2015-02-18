@@ -4,8 +4,8 @@ import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
-import project.cards.objects.impl.Player;
 import project.cards.objects.impl.Game;
+import project.cards.objects.impl.Player;
 
 import java.util.HashMap;
 import java.util.List;
@@ -211,6 +211,7 @@ public abstract class GameService{
         return g.getPlayerIds().get(index);
     }
 
-    public abstract FlowService<?,?> getFlowService();
+	public abstract FlowService<?, ?> getFlowService();
 
+	public abstract void handleAction(String gId, String pId, JsonObject jsonParams);
 }

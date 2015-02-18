@@ -29,6 +29,14 @@ public class DeckServiceImpl extends DeckService {
 		gamesToStrongCardSuits.put(gId, Card.getById(strongCardId).getSuit());
 	}
 
+	@Override
+	public String deal(String gId) {
+		System.out.println("DECK SIZE BEFORE " + getFakeSize(gId));
+		String returnnn = super.deal(gId);
+		System.out.println("DECK SIZE AFTER " + getFakeSize(gId));
+		return returnnn;
+	}
+
 	public static DeckServiceImpl getInstance() {
 		if(null != instance) {
 			return instance;

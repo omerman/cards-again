@@ -25,10 +25,8 @@ import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.sockjs.SockJSServer;
 import org.vertx.java.platform.Verticle;
-import project.cards.auth.AuthManager;
 import project.cards.services.eventbus.EventBusService;
 import project.cards.services.game.durak.GameServiceImpl;
-import project.cards.services.game.durak.PlayerServiceImpl;
 
 public class ApplicationServer extends Verticle {
 

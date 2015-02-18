@@ -1,6 +1,5 @@
 package project.cards.services.eventbus;
 
-import com.hazelcast.util.StringUtil;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.eventbus.EventBus;
 import org.vertx.java.core.eventbus.Message;
@@ -8,15 +7,9 @@ import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
 import org.vertx.java.core.sockjs.EventBusBridgeHook;
-import project.cards.objects.durak.DurakAction;
-import project.cards.objects.durak.DurakFlow;
 import project.cards.services.eventbus.hook.EventBusBridgeHookImpl;
-import project.cards.services.game.DeckService;
 import project.cards.services.game.GameService;
 import project.cards.services.game.PlayerService;
-import project.cards.services.game.durak.DeckServiceImpl;
-import project.cards.services.game.durak.FlowServiceImpl;
-import project.cards.services.game.durak.YackServiceImpl;
 
 import java.util.Set;
 
@@ -196,38 +189,16 @@ public class EventBusService {
                 logger.info(event.body());
                 String gId = event.body().getString("gId");
                 String pId = event.body().getString("pId");
-                String actionType = event.body().getString("actionType");
 
-                DurakAction durakAction = new DurakAction(pId,actionType);
-
-                JsonObject attackCard;
-
-                switch(actionType) {
-                    case DurakAction.Types.ATTACK:
-                        attackCard = event.body().getObject("attackCard");
-                        durakAction.setAttackCardId(DeckServiceImpl.getInstance().getCardId(attackCard));
-                        break;
-                    case DurakAction.Types.ANSWER:
-                        attackCard = event.body().getObject("attackCard");
-                        JsonObject answerCard = event.body().getObject("answerCard");
-                        durakAction.setAttackCardId(DeckServiceImpl.getInstance().getCardId(attackCard));
-                        durakAction.setAnswerCardId(DeckServiceImpl.getInstance().getCardId(answerCard));
-                        break;
-                    case DurakAction.Types.COLLECT:
-	                case DurakAction.Types.DONE_ATTACKING:
-		                break;
-	                default:
-                        logger.info("TODO: handle me.. no attack type specified.");
-		                return;
-                }
 
 	            try {
-		            FlowServiceImpl.getInstance().requestAction(gId, durakAction);
+		            gameService.handleAction(gId, pId, event.body());
 	            } catch(Exception e) {
 		            replyMyHandWithError(event, gId, pId, e.getMessage());//reply with the error
+		            return;
 	            }
-	            publishGameInfoUpdate(gId);//no errors :).
-	            replyMyHand(event, gId, pId);
+	            replyMyHand(event, gId, pId);//no errors if we got here:).
+	            publishGameInfoUpdate(gId);
             }
         });
     }
