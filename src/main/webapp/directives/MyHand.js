@@ -14,7 +14,6 @@ define([], function () {//<myhand></myhand>
                 };
 
                 $scope.data.unregisterArr.push($scope.$on('reloadMyHand', function () {
-                    console.log("hands reloaded.", $scope.getMyHand());
                     $scope.data.myHand = $scope.getMyHand();
 
                     /*var cards = [];

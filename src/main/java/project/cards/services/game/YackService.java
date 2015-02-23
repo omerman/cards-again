@@ -19,6 +19,10 @@ public abstract class YackService<Y extends Yack> {
 		return yacksByGame.get(gId);
 	}
 
+	public void removeYack(String gId) {
+		yacksByGame.remove(gId);
+	}
+
 	public List<String> getCards(String gId) {
 		Yack y = getYack(gId);
 		List<String> cards = y.toList();
@@ -42,4 +46,6 @@ public abstract class YackService<Y extends Yack> {
 	}
 
 	public abstract JsonArray getJsonYack(String gId);
+
+
 }

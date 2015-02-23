@@ -1,22 +1,21 @@
-define([],function() {//<opphand></opphand>
-    return function(){
+define([], function () {//<opphand></opphand>
+    return function () {
         return {
             restrict: 'E',
             replace: true,
             templateUrl: "views/opponentHand.html",
             scope: {
-              "getCardsNum":"&cardsNum"
+                "getCardsNum": "&cardsNum"
             },
-            controller: function($scope) {
+            controller: function ($scope) {
 
                 $scope.data = {
-                    cardsRange : new Array($scope.getCardsNum() || 0),
-                    unregisterArr:[]
+                    cardsRange: new Array($scope.getCardsNum() || 0),
+                    unregisterArr: []
                 };
 
-                $scope.data.unregisterArr.push($scope.$on('reloadHands', function() {
+                $scope.data.unregisterArr.push($scope.$on('reloadHands', function () {
                     $scope.data.cardsRange = new Array($scope.getCardsNum() || 0);
-                    console.log("render opponent: "+$scope.data.cardsRange);
                 }));
 
             }

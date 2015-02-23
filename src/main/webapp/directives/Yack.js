@@ -35,28 +35,27 @@ define([], function () {//<yack></yack>
                     // listen for drop related events:
 
                     ondropactivate: function (event) {
-                        console.log("ondropactivate");
+                        //console.log("ondropactivate");
                     },
                     ondragenter: function (event) {
-                        console.log("ondragenter");
+                        //console.log("ondragenter");
                         event.relatedTarget.classList.add('yackDrop');
                     },
                     ondragleave: function (event) {
-                        console.log("ondragleave");
+                        //console.log("ondragleave");
                         event.relatedTarget.classList.remove('yackDrop');
 
                     },
                     ondrop: function (event) {
-                        console.log("ondrop");
+                        //console.log("ondrop");
                     },
                     ondropdeactivate: function (event) {
-                        console.log("ondropdeactivate");
+                        //console.log("ondropdeactivate");
                         //event.relatedTarget.classList.remove('yackDrop');
                     }
                 });
 
                 $scope.data.unregisterArr.push($scope.$on('reloadYack', function () {
-                    console.log("REM: yack reloaded.", $scope.getYack());
                     $scope.data.yack = $scope.getYack();
 
                 }));

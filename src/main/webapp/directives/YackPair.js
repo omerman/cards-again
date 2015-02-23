@@ -4,7 +4,7 @@ define([], function () {//<drop-zone></drop-zone>
             restrict: 'E',
             replace: true,
             scope: {
-                yackPair:"=yackPair"
+                yackPair: "=yackPair"
             },
             templateUrl: "views/yackPair.html",
             controller: function ($scope, $element) {
@@ -16,18 +16,18 @@ define([], function () {//<drop-zone></drop-zone>
                     // only accept elements matching this CSS selector
                     accept: '.card',
                     // Require a 75% element overlap for a drop to be possible
-                    overlap: 0.75,
+                    overlap: 0.60,
 
                     // listen for drop related events:
 
                     ondropactivate: function (event) {
-                        console.log("yackPair: ondropactivate");
+                        //console.log("yackPair: ondropactivate");
                     },
                     ondragenter: function (event) {
-                        console.log("yackPair: ondragenter");
+                        //console.log("yackPair: ondragenter");
 
                         $scope.clearOtherYacks();
-                        if(!$scope.yackPair.frontCard) {
+                        if (!$scope.yackPair.frontCard) {
                             event.target.classList.add('active');
                             event.relatedTarget.classList.add("yackCardDrop");
                         }
@@ -37,23 +37,23 @@ define([], function () {//<drop-zone></drop-zone>
                         }
                     },
                     ondragleave: function (event) {
-                        console.log("yackPair: ondragleave");
+                        //console.log("yackPair: ondragleave");
                         event.target.classList.remove('active');
                         event.target.classList.remove('not-allowed');
                         event.relatedTarget.classList.remove("yackCardDrop");
                     },
                     ondrop: function (event) {
-                        console.log("yackPair: ondrop");
+                        //console.log("yackPair: ondrop");
                     },
                     ondropdeactivate: function (event) {
-                        console.log("yackPair: ondropdeactivate");
+                        //console.log("yackPair: ondropdeactivate");
                         //event.relatedTarget.classList.remove('yackDrop');
                     }
                 });
 
-                $scope.clearOtherYacks = function() {
+                $scope.clearOtherYacks = function () {
                     var otherYackPairs = document.querySelectorAll('.yack .yackPair.active');
-                    for(var i = 0;i<otherYackPairs.length;i++) {
+                    for (var i = 0; i < otherYackPairs.length; i++) {
                         otherYackPairs[i].classList.remove('active');
                         otherYackPairs[i].classList.remove('not-allowed');
                     }

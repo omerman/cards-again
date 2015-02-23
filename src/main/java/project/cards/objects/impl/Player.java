@@ -60,4 +60,8 @@ public class Player {
 	public void setReady(boolean isReady) {
 		this.isReady = isReady;
 	}
+
+	public void clearCards() {
+		this.setCardIds(new HashSet<String>());
+	}
 }

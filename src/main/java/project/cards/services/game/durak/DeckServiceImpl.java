@@ -52,7 +52,7 @@ public class DeckServiceImpl extends DeckService {
 
 	public JsonObject getJsonStrongCard(String gId) {
 		Deck d = getDeck(gId);
-		return this.getJsonCard(d.get(d.size() - 1));
+		return d.size() > 0 ?this.getJsonCard(d.get(d.size() - 1)) :null;
 	}
 
 	public boolean isStrongCard(String gId, Card card) {

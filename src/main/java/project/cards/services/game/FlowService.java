@@ -19,7 +19,16 @@ public abstract class FlowService<F extends Flow, A extends Action> {
 
 	protected abstract void doAction(String gId, A a);
 
-	protected abstract void initializeFlow(String gId);
+	protected abstract void stopFlow(String gId);
+
+
+	protected abstract void resetFlow(String gId);
+
+	protected abstract void initNextFlow(String gId);
+
+	protected void removeFlow(String gId) {
+		flows.remove(gId);
+	}
 
 	protected void increaseFlow(String gId, int nextPlayerIndex) {
 		getFlow(gId).setCurrentPlayerTurnIndex(nextPlayerIndex);

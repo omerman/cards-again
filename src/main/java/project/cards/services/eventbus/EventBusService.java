@@ -170,14 +170,13 @@ public class EventBusService {
                 if(!gameService.isGameStarted(gId)) {
 
                     String pId = event.body().getString("pId");
-                    boolean isReady = event.body().getBoolean("isReady");
-                    gameService.getPlayerService().setReady(gId, pId, isReady);
+	                gameService.getPlayerService().toggleReady(gId, pId);
 
                     if(gameService.isReadyToStart(gId)) {
                         gameService.startGame(gId);
                         publishGameStarted(gId);
-                        publishGameInfoUpdate(gId);
                     }
+	                publishGameInfoUpdate(gId);
                 }
                 event.reply(new JsonObject());
             }

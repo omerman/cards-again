@@ -1,10 +1,10 @@
-define([],function() {//<page></page>
-    return function(){
+define([], function () {//<page></page>
+    return function () {
         return {
             restrict: 'E',
             replace: true,
             templateUrl: "views/page.html",
-            controller: ["$scope","$location","vertxEventBus",function($scope,$location,vertxEventBus){
+            controller: ["$scope", "$location", "vertxEventBus", function ($scope, $location, vertxEventBus) {
 
                 //DEFINE FUNCS & PARAMS - START
 
@@ -23,7 +23,7 @@ define([],function() {//<page></page>
                  * @param settings.callBackError
                  * @param settings.callBackAfterLogin
                  */
-                $scope.toServer = function(settings) {
+                $scope.toServer = function (settings) {
 
                     var address = settings.address;
                     var action = settings.action;
@@ -33,7 +33,7 @@ define([],function() {//<page></page>
                     var callBackAfterLogin = settings.callBackAfterLogin;
                     var returnVal = null;
 
-                    var wrappedCallBack = function(callBackData) {
+                    var wrappedCallBack = function (callBackData) {
 
                         window.setTimeout(function () {
                             if (callBackData) {
@@ -42,9 +42,7 @@ define([],function() {//<page></page>
                                     if (callBackAfterLogin) {
                                         $scope.callBackAfterLogin = callBackAfterLogin;
 
-                                        $scope.$apply(function () {
-                                            $location.path("/login");
-                                        });
+                                        $scope.changeLocation("/login")
                                     }
                                     else {
                                         console.log("address: " + address + "requires log in. supply 'callBackAfterLogin' for auto redirect to login page.");
@@ -76,15 +74,15 @@ define([],function() {//<page></page>
                         func = function () {
                             vertxEventBus.registerHandler(address, wrappedCallBack);
                         };
-                        returnVal = function() {
-                            vertxEventBus.unregisterHandler(address,wrappedCallBack);
+                        returnVal = function () {
+                            vertxEventBus.unregisterHandler(address, wrappedCallBack);
                         }
                     } else {
                         console.error("$scope.toServer requires action to be populated with a value from this if-else ;)");
                         return;
                     }
 
-                    if(vertxEventBus.readyState() === 1) {//vertxEventBus is ready.
+                    if (vertxEventBus.readyState() === 1) {//vertxEventBus is ready.
                         func();
                     }
                     else {//verxEventBus is not ready.
@@ -101,47 +99,47 @@ define([],function() {//<page></page>
                  * @param settings.data
                  * @param settings.callBack
                  */
-                $scope.login = function(settings) {
+                $scope.login = function (settings) {
 
                     var data = settings.data;
                     var callBack = settings.callBack;
 
-                    vertxEventBus.login(data.username,data.password,function(callBackData) {
+                    vertxEventBus.login(data.username, data.password, function (callBackData) {
 
                         var isLoggedIn = callBackData && callBackData.status === "ok";
 
-                        if(typeof callBack === "function") {
+                        if (typeof callBack === "function") {
                             callBack(isLoggedIn);
                         }
                         if (typeof $scope.callBackAfterLogin === "function") {
 
                             var futureFunc = $scope.callBackAfterLogin;
-                            window.setTimeout(function() {
+                            window.setTimeout(function () {
                                 futureFunc(isLoggedIn);
-                            },500);
+                            }, 500);
 
                             $scope.callBackAfterLogin = null;
 
                         }
 
-                        if(!isLoggedIn) {
+                        if (!isLoggedIn) {
                             console.log("could not log in");
                         }
                         else {
-                            $scope.$broadcast("loggedIn",callBackData);
+                            $scope.$broadcast("loggedIn", callBackData);
                         }
                     });
                 };
 
-                $scope.changeLocation = function(path) {
-                    $scope.$apply(function() {
+                $scope.changeLocation = function (path) {
+                    $scope.$apply(function () {
                         $location.path(path);
                     });
                 };
 
                 $scope.ACTIONS = {
-                    SEND:"SEND",
-                    LISTEN:"LISTEN"
+                    SEND: "SEND",
+                    LISTEN: "LISTEN"
                 };
 
                 //DEFINE FUNCS & PARAMS - END
@@ -150,15 +148,15 @@ define([],function() {//<page></page>
                 vertxEventBus.onopen = function () {
 
                     var func;
-                    while($scope.onReadyQueue.length) {
+                    while ($scope.onReadyQueue.length) {
                         func = $scope.onReadyQueue.shift();
                         func();
                     }
                     $scope.eventBusConnected = true;
                 };
 
-                vertxEventBus.onclose = function() {
-                    if($scope.eventBusConnected) {
+                vertxEventBus.onclose = function () {
+                    if ($scope.eventBusConnected) {
                         window.location.reload();//reload the whole page.
                     }
                 };

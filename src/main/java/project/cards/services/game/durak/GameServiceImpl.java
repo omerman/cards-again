@@ -10,6 +10,8 @@ import project.cards.services.game.GameService;
 import project.cards.services.game.PlayerService;
 import project.cards.services.game.YackService;
 
+import java.util.*;
+
 /**
  * Created by omerpr on 23/01/2015.
  */
@@ -19,7 +21,6 @@ public class GameServiceImpl extends GameService {
 	private static GameServiceImpl instance = null;
 
 	private GameServiceImpl() {
-
 	}
 
 	public static GameServiceImpl getInstance() {
@@ -36,13 +37,13 @@ public class GameServiceImpl extends GameService {
 	}
 
 	@Override
-	protected void completeHand(String gId, int index) {
-		int initialCardsNumber = getInitialCardsNum();
-		String pId = getPlayerPId(gId, index);
+	public PlayerService getPlayerService() {
+		return PlayerServiceImpl.getInstance();
+	}
 
-		while(!DeckServiceImpl.getInstance().isEmpty(gId) && PlayerServiceImpl.getInstance().getCardsSize(gId, pId) < initialCardsNumber) {
-			PlayerServiceImpl.getInstance().addCardId(gId, pId, DeckServiceImpl.getInstance().deal(gId), false);
-		}
+	@Override
+	public FlowServiceImpl getFlowService() {
+		return FlowServiceImpl.getInstance();
 	}
 
 	@Override
@@ -51,19 +52,53 @@ public class GameServiceImpl extends GameService {
 	}
 
 	@Override
-	public PlayerService getPlayerService() {
-		return PlayerServiceImpl.getInstance();
-	}
-
-
-	@Override
-	protected YackService<DurakYack> getYackService() {
+	public YackService<DurakYack> getYackService() {
 		return YackServiceImpl.getInstance();
 	}
 
 	@Override
-	public FlowServiceImpl getFlowService() {
-		return FlowServiceImpl.getInstance();
+	public void startGame(String gId) {
+		super.startGame(gId);
+	}
+
+	@Override
+	protected void completeHand(String gId, int index) {
+		logger.info("completeHand start.");
+
+		int initialCardsNumber = getInitialCardsNum();
+		String pId = getPlayerPId(gId, index);
+
+		while(!DeckServiceImpl.getInstance().isEmpty(gId) && PlayerServiceImpl.getInstance().getCardsSize(gId, pId) < initialCardsNumber) {
+			PlayerServiceImpl.getInstance().addCardId(gId, pId, DeckServiceImpl.getInstance().deal(gId), false);
+		}
+
+		logger.info("completeHand end.");
+	}
+
+	@Override
+	protected boolean isGameOver(String gId) {
+		return getLosers(gId).size() == 1;
+	}
+
+	@Override
+	protected boolean isPlayerStillInGame(String gId, String pId) {
+		return !getDeckService().isEmpty(gId) || getPlayerService().getCardsSize(gId, pId) > 0;
+	}
+
+	public Set<String> getLosers(String gId) {
+		Set<String> losers = new HashSet<>(2);
+		for(String pId : getPlayersIds(gId)) {
+			if(isPlayerStillInGame(gId, pId)) {
+				losers.add(getPlayerService().getPlayerUserName(pId));
+			}
+		}
+		return losers;
+	}
+
+	@Override
+	protected void populateJsonGameEndedInfo(JsonObject gameInfo, String gId) {
+		super.populateJsonGameEndedInfo(gameInfo, gId);
+		gameInfo.putString("loser", getLosers(gId).iterator().next());
 	}
 
 	@Override

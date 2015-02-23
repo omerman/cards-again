@@ -1,30 +1,37 @@
-define([],function() {//<player></player>
-    return function(){
+define([], function () {//<player></player>
+    return function () {
         return {
             restrict: 'E',
             replace: true,
             templateUrl: "views/player.html",
             scope: {
-                "getPlayerName":"&playerName",
-                "isDefender":"&",
-                "isFirstAttacker":"&"
+                getPalyerData: "&playerData"
             },
-            controller: function($scope) {
-                $scope.data = {
-                    playerName : $scope.getPlayerName() || "",
-                    defender: $scope.isDefender(),
-                    isFirstAttacker: $scope.isFirstAttacker(),
-                    turn:false,
-                    unregisterArr:[]
+            controller: function ($scope) {
+
+                $scope.initialize = function () {
+                    $scope.data = {
+                        unregisterArr: []
+                    };
+                    $scope.updatePlayerData();
+                };
+                $scope.updatePlayerData = function () {
+                    var playerData = $scope.getPalyerData();
+                    $scope.data.playerName = playerData.name || "";
+                    $scope.data.defender = playerData.isDefender;
+                    $scope.data.isFirstAttacker = playerData.isFirstAttacker;
+                    $scope.data.isLoser = playerData.isLoser;
                 };
 
-                $scope.data.unregisterArr.push($scope.$on('reloadPlayers', function() {
+                $scope.initialize();
 
-                    $scope.data.playerName = $scope.getPlayerName() || "";
-                    $scope.data.defender = $scope.isDefender();
-                    $scope.data.isFirstAttacker = $scope.isFirstAttacker();
-                    console.log("render player: "+$scope.data.playerName);
+                $scope.data.unregisterArr.push($scope.$on('reloadPlayers', function () {
+
+                    $scope.updatePlayerData();
+                    console.log("render player: " + $scope.data.playerName);
                 }));
+
+
             }
         }
     }

@@ -9,14 +9,13 @@ define([], function () {//<opphand></opphand>
             },
             controller: function ($scope) {
 
-                console.log("initiate deck.");
                 $scope.data = {
                     cardsRange: new Array($scope.getDeckSize() || 0),
                     unregisterArr: []
                 };
 
                 $scope.data.unregisterArr.push($scope.$on('reloadDeck', function () {
-                    console.log("reload deck.");
+                    console.log("deck size: ", $scope.getDeckSize());
                     $scope.data.cardsRange = new Array($scope.getDeckSize() || 0);
                 }));
             }

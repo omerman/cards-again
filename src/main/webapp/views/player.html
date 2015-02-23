@@ -1,6 +1,8 @@
 <div class="player auto-unregister" ng-show="data.playerName">
     <span class="playerName">{{data.playerName}}</span>
-    <span class="player-display{{data.defender ?' defender' :''}}{{data.isFirstAttacker ?' firstAttacker' :''}}">
+    <img ng-if="data.isLoser" class="loser" src="images/loser.jpg" style="width:35px;height:35px;border-radius:50%"/>
+    <span ng-if="!data.isLoser"
+          class="player-display{{data.defender ?' defender' :''}}{{data.isFirstAttacker ?' firstAttacker' :''}}{{data.isLoser ?' loser' :''}}">
         <div class="head"></div>
         <div class="body shoulders"></div>
         <div class="body waist"></div>

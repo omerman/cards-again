@@ -91,7 +91,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 		String initiatorPId = durakAction.getInitiatorPId();
 
 
-		if(PlayerServiceImpl.getInstance().isPlayerInGame(gId, initiatorPId)) {//If the player initiated this action is part of the game.
+		if(PlayerServiceImpl.getInstance().isPlayerExists(gId, initiatorPId)) {//If the player initiated this action is part of the game.
 			int initiatorPlayerPosIndex = GameServiceImpl.getInstance().getPlayerPosIdx(gId, initiatorPId);
 			int currentTurnIndex = f.getCurrentPlayerTurnIndex();
 			String targetPId = getCurrentDefenderPId(gId);
@@ -161,7 +161,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 							&&
 							!StringUtil.isNullOrEmpty(answeringCardId)
 							&&
-							!YackServiceImpl.getInstance().isBackCardAnswered(gId, answeringCardId, true)
+							!YackServiceImpl.getInstance().isBackCardAnswered(gId, attackingCardId, true)
 							&&
 							(answeringCard.getSuit() == attackingCard.getSuit()
 									?answeringCard.compareTo(attackingCard) > 0
@@ -174,6 +174,8 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 
 				case DurakAction.Types.DONE_ATTACKING:
 					return !initiatorPId.equals(targetPId)
+							&&
+							GameServiceImpl.getInstance().isPlayerStillInGame(gId, initiatorPId)
 							&&
 							isDoneAttackingPossible(gId);
 				default:
@@ -199,7 +201,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 		int currentYackSize = YackServiceImpl.getInstance().getYackSize(gId);
 		return YackServiceImpl.MAX_YACK_SIZE == currentYackSize
 				||
-				PlayerServiceImpl.getInstance().getCardsSize(gId, targetPId) == (YackServiceImpl.getInstance().getFrontCardsSize(gId) - YackServiceImpl.getInstance().getBackCardsSize(gId));
+				PlayerServiceImpl.getInstance().getCardsSize(gId, targetPId) == YackServiceImpl.getInstance().getUnAnsweredCards(gId);
 	}
 
 	@Override
@@ -213,6 +215,12 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 				YackServiceImpl.getInstance().addBackCardId(gId, attackingCardId);
 
 				flow.setCurrentPlayerTurnIndex(-1);
+
+				//If game is over after this attack..
+				if(!GameServiceImpl.getInstance().isGameOver(gId)) {
+					stopFlow(gId);
+					return;
+				}
 
 				//Transferring rule
 				if(getCurrentDefenderPId(gId).equals(durakAction.getInitiatorPId())) {
@@ -241,8 +249,8 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 				}
 				break;
 			case DurakAction.Types.DONE_ATTACKING:
-				toggleDoneAttackingUser(flow, PlayerServiceImpl.getInstance().getPlayerUserName(durakAction.getInitiatorPId()));
-				if(GameServiceImpl.getInstance().getPlayersIds(gId).size() == flow.getDoneAttackingUsers().size() + 1) {//all players are done attacking.
+				toggleDoneAttackingUser(flow, durakAction.getInitiatorPId());
+				if(GameServiceImpl.getInstance().getLosers(gId).size() == flow.getDoneAttackingUsers().size() + 1) {//all players are done attacking.
 					if(flow.isDefenderCollecting()) {
 						endTurnAfterCollection(gId);
 					} else {
@@ -251,7 +259,16 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 				}
 				break;
 		}
+
 	}
+
+	@Override
+	protected void stopFlow(String gId) {
+		resetFlow(gId);
+		increaseFlow(gId, -1, -1);
+		GameServiceImpl.getInstance().endGame(gId);
+	}
+
 
 	private void toggleDoneAttackingUser(DurakFlow flow, String pId) {
 		String userName = PlayerServiceImpl.getInstance().getPlayerUserName(pId);
@@ -260,7 +277,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 
 	private boolean isDefenseDone(String gId) {
 		return YackServiceImpl.getInstance().getBackCardsSize(gId) > 0
-				&& YackServiceImpl.getInstance().getFrontCardsSize(gId) == YackServiceImpl.getInstance().getBackCardsSize(gId);
+				&& YackServiceImpl.getInstance().getUnAnsweredCards(gId) == 0;
 	}
 
 	private void endTurnAfterCollection(String gId) {
@@ -276,9 +293,10 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 
 		//if game attacked p2, and p2 collected, now p3 should attack p4.
 		int nextPlayerIndex = GameServiceImpl.getInstance().getNextPlayerPos(gId, flow.getCurrentDefenderIndex());
+
 		increaseFlow(gId, nextPlayerIndex, GameServiceImpl.getInstance().getNextPlayerPos(gId, nextPlayerIndex));
 
-		initializeFlow(gId);
+		initNextFlow(gId);
 	}
 
 	private void endTurnWithoutCollection(String gId) {
@@ -289,12 +307,14 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 
 		completeHands(gId);
 
-
-		int currentDefenderIndex = flow.getCurrentDefenderIndex();
+		int nextAttackerIndex = flow.getCurrentDefenderIndex();
+		if(!GameServiceImpl.getInstance().isPlayerStillInGame(gId, nextAttackerIndex)) {
+			nextAttackerIndex = GameServiceImpl.getInstance().getNextPlayerPos(gId, nextAttackerIndex);
+		}
 
 		//if game attacked p2, and p2 finished answering, p2 should attack p3.
-		increaseFlow(gId, currentDefenderIndex, GameServiceImpl.getInstance().getNextPlayerPos(gId, currentDefenderIndex));
-		initializeFlow(gId);
+		increaseFlow(gId, nextAttackerIndex, GameServiceImpl.getInstance().getNextPlayerPos(gId, nextAttackerIndex));
+		initNextFlow(gId);
 	}
 
 	private void increaseFlow(String gId, int nextPlayerIndex, int nextDefenderIndex) {
@@ -312,11 +332,20 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 	}
 
 	@Override
-	protected void initializeFlow(String gId) {
+	protected void resetFlow(String gId) {
 		DurakFlow flow = getFlow(gId);
 
 		flow.resetDoneAttackingUsers();
 		flow.setDefenderCollecting(false);
+	}
+
+	@Override
+	protected void initNextFlow(String gId) {
+		if(GameServiceImpl.getInstance().isGameOver(gId)) {
+			stopFlow(gId);
+		} else {
+			resetFlow(gId);
+		}
 	}
 
 	/**

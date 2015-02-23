@@ -27,7 +27,7 @@ public abstract class DeckService {
 		}
 
 		Random rand = new Random();
-		int randomInt = rand.nextInt(d.size() - 1);
+		int randomInt = d.size() > 1 ?rand.nextInt(d.size() - 1) :0;
 
 		decreaseFakeSize(gId);
 		return d.remove(randomInt);

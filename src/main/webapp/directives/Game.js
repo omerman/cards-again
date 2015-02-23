@@ -6,6 +6,10 @@ define([], function () {//<game></game>
             templateUrl: "views/game.html",
             controller: function ($scope) {
 
+                $scope.isHandExists = function () {
+                    return $scope.data.myHand != null;
+                };
+
                 $scope.initData = function () {
                     $scope.data = {
                         gId: $scope.data.gId,
@@ -17,32 +21,30 @@ define([], function () {//<game></game>
                 $scope.setGameData = function (game) {
                     if (game) {
                         var prevDeckSize = $scope.data.deck.size;
+                        var prevLoser = $scope.data.loser;
                         var wasITheDefender = $scope.isDefender(0);
+
                         $scope.data.isStarted = game.isStarted;
                         $scope.data.players = game.players;
                         $scope.data.yackInfo = game.yackInfo;
+                        $scope.data.loser = game.loser;
                         $scope.setFlowData(game.flowInfo);
                         $scope.setDeckData(game.deckInfo);
                         //if someone collected the yack,
-                        // and prev deck size was higher than 0,
                         // and I've had a hand,
-                        // and (it needs to be completed
-                        // or I was the defender and I have collected the cards which means I'm not the first attacker.)
-                        /*if($scope.data.yackInfo) {
-                         console.log($scope.data.yackInfo);
-                         console.log()
-                         }*/
+                        // and
+                        // (    (it needs to be completed and prev deck size was higher than 0)
+                        //      or I was the defender and I have collected the cards which means I'm not the first attacker.
+                        // )
                         if ($scope.data.yackInfo && !$scope.data.yackInfo.length &&
-                            prevDeckSize > 0 &&
-                            $scope.data.myHand &&
-                            ($scope.data.myHand.length < 6 || (wasITheDefender && !$scope.isFirstAttacker(0)))) {
-                            console.log("fetch my hand");
+                            $scope.isHandExists() &&
+                            ((prevLoser || ($scope.data.myHand.length < 6 && prevDeckSize > 0) ) || (wasITheDefender && !$scope.isFirstAttacker(0)))) {
+                            console.log("FETCH MY HAND!");
                             $scope.getMyHand();
                         }
                     }
                     else {
                         $scope.data.isStarted = false;
-                        $scope.data.isReady = false;
                         $scope.data.players = [];
                         $scope.data.shiftOpponents = 0;
                         $scope.data.yackInfo = null;
@@ -90,23 +92,22 @@ define([], function () {//<game></game>
                 $scope.initData();
 
                 $scope.readyClick = function () {
-                    console.log("ready click");
-                    $scope.data.isReady = !$scope.data.isReady;
                     $scope.toServer({
                         address: "game.readyOrNot.request",
                         action: $scope.ACTIONS.SEND,
                         data: {
-                            gId: $scope.data.gId,
-                            isReady: $scope.data.isReady
+                            gId: $scope.data.gId
                         }
                     });
                 };
 
                 $scope.startGame = function () {
-                    $scope.data.isStarted = true;
-                    $scope.getMyHand();
                     window.setTimeout(function () {
-                        $scope.$apply()
+                        $scope.$apply(function () {
+                            console.log("applying");
+                            $scope.data.isStarted = true;
+                            $scope.getMyHand();
+                        });
                     }, 0);
                 };
 
@@ -122,26 +123,37 @@ define([], function () {//<game></game>
                 };
 
                 $scope.gameUpdate = function (game) {
-                    console.log("gameUpdate", game);
 
-                    $scope.setGameData(game);
-                    $scope.$broadcast("reloadHands");
-                    $scope.$broadcast("reloadYack");
-                    $scope.$broadcast("reloadDeck");
-                    $scope.$broadcast("reloadPlayers");
 
-                    $scope.$apply();
+                    $scope.$apply(function () {
+                        console.log("Game data", game);
+                        console.log("applying");
+                        $scope.setGameData(game);
+                        $scope.$broadcast("reloadHands");
+                        $scope.$broadcast("reloadYack");
+                        $scope.$broadcast("reloadDeck");
+                        $scope.$broadcast("reloadPlayers");
+                    });
                 };
 
                 $scope.myHandUpdate = function (data) {
-                    console.log("myHandUpdate", data);
-                    $scope.data.myHand = data ? (data.myHand || []) : [];
-                    $scope.$broadcast("reloadMyHand");
-                    $scope.$apply();
+
+
+                    $scope.$apply(function () {
+                        console.log("applying");
+                        if (!data || !data.myHand) {
+                            $scope.data.myHand = [];
+                        }
+                        else {
+                            $scope.data.myHand = data.myHand;
+                        }
+                        $scope.$broadcast("reloadMyHand");
+                    });
                 };
 
-                $scope.getPlayerCardsNum = function (index) {
-                    var player = $scope.getPlayerByIndex($scope.getIndexByPositionedIndex(index));
+                $scope.getPlayerCardsNum = function (positionedIndex) {
+                    console.log("getPlayerCardsNum", positionedIndex);
+                    var player = $scope.getPlayerByIndex($scope.getIndexByPositionedIndex(positionedIndex));
 
                     return player ? player.cardsNum : 0;
                 };
@@ -152,12 +164,37 @@ define([], function () {//<game></game>
                     return player ? player.userName : null;
                 };
 
+                $scope.isGameStarted = function () {
+                    return $scope.data.isStarted;
+                };
+
+                $scope.isPlayerExists = function (positionedIndex) {
+                    return $scope.getPlayerByIndex($scope.getIndexByPositionedIndex(positionedIndex));
+                };
+
+                $scope.isPlayerReady = function (positionedIndex) {
+
+                    if ($scope.data.isStarted) {
+                        return true;
+                    }
+                    var player = $scope.getPlayerByIndex($scope.getIndexByPositionedIndex(positionedIndex));
+                    return player && player.isReady;
+                };
+
                 $scope.isDefender = function (positionedIndex) {
                     return $scope.data.flow.defenderPosIndex === $scope._getShiftedPos($scope.getIndexByPositionedIndex(positionedIndex));
                 };
 
+                $scope.isDefenderCollecting = function () {
+                    return $scope.data.flow.isDefenderCollecting;
+                };
+
                 $scope.isFirstAttacker = function (positionedIndex) {
                     return $scope.data.flow.turnPosIndex === $scope._getShiftedPos($scope.getIndexByPositionedIndex(positionedIndex));
+                };
+
+                $scope.isLoser = function (playerName) {
+                    return $scope.data.loser === playerName;
                 };
 
                 $scope.getIndexByPositionedIndex = function (positionedIndex) {
@@ -201,8 +238,6 @@ define([], function () {//<game></game>
 
                 $scope.firstGameUpdate = function (game) {
 
-                    console.log("firstGameUpdate");
-
                     $scope.data.unregisterArr.push($scope.toServer({
                         address: "game.info.update." + $scope.data.gId,
                         action: $scope.ACTIONS.LISTEN,
@@ -213,7 +248,6 @@ define([], function () {//<game></game>
                     }));
 
                     if (game.isStarted) {
-                        console.log("firstGameUpdate", "game.isStarted=true");
                         $scope.startGame();
                     }
                     else {
@@ -225,7 +259,11 @@ define([], function () {//<game></game>
                     }
 
                     $scope.data.shiftOpponents = game.requesterPosIdx === -1 ? 0 : game.requesterPosIdx;
-                    $scope.data.myHand = $scope.data.myHand || (game.requesterPosIdx !== -1 ? [] : null);
+
+                    if (!$scope.data.myHand) {
+                        $scope.data.myHand = game.requesterPosIdx !== -1 ? [] : null;
+                    }
+
 
                     $scope.gameUpdate(game);
                 };
@@ -239,6 +277,18 @@ define([], function () {//<game></game>
                         action: "DONE_ATTACKING"
                     });
                 };
+                $scope.getPlayerData = function (positionedIndex) {
+                    var playerName = $scope.getPlayerName(positionedIndex)
+                    return {
+                        name: playerName,
+                        isReady: $scope.isPlayerReady(positionedIndex),
+                        isDefender: $scope.isDefender(positionedIndex),
+                        isFirstAttacker: $scope.isFirstAttacker(positionedIndex),
+                        isCollecting: $scope.isDefenderCollecting(),
+                        isLoser: $scope.isLoser(playerName)
+                    };
+                };
+
                 $scope.doAction = function (data) {
                     if (data && data.action) {
                         switch (data.action) {
@@ -332,7 +382,6 @@ define([], function () {//<game></game>
                     $scope.doAction(data);
                 });
 
-
                 $scope.toServer({
                     address: "game.info.request",
                     action: $scope.ACTIONS.SEND,
@@ -345,7 +394,7 @@ define([], function () {//<game></game>
                             $scope.firstGameUpdate(data.game);
                         }
                         else {
-                            $scope.resetData();
+                            $scope.setGameData(null);
                             console.log("FIX ME.-> Game.js");
                         }
                     }

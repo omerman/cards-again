@@ -1,7 +1,6 @@
 package project.cards.objects.impl;
 
 import project.cards.objects.CardIdsList;
-import project.cards.objects.impl.Card;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,38 +10,38 @@ import java.util.List;
  */
 public class Deck implements CardIdsList {
 
-    private List<String> cards;
+	private List<String> cards;
 
-    public static final int MAX_SIZE = 52;
+	public static final int MAX_SIZE = 52;
 
-    public Deck() {
-        cards = new ArrayList<>(MAX_SIZE);
-        for(int i = 1,j;i<5;i++) {
-            for(j = 2;j<15;j++) {
-                cards.add(Card.getId(i, j));
-            }
+	public Deck() {
+		cards = new ArrayList<>(MAX_SIZE);
+		for(int i = 1, j; i < 5; i++) {
+			for(j = 6; j < 15; j++) {
+				cards.add(Card.getId(i, j));
+			}
 
-        }
-    }
+		}
+	}
 
-    public String get(int index) {
-        return this.cards.get(index);
-    }
+	public String get(int index) {
+		return this.cards.get(index);
+	}
 
-    public void add(String cardId) {
-        this.cards.add(cardId);
-    }
+	public void add(String cardId) {
+		this.cards.add(cardId);
+	}
 
-    public String remove(int i) {
-        return cards.remove(i);
-    }
+	public String remove(int i) {
+		return cards.remove(i);
+	}
 
-    public int size() {
-        return this.cards.size();
-    }
+	public int size() {
+		return this.cards.size();
+	}
 
-    @Override
-    public List<String> toList() {
-        return new ArrayList<>(cards);
-    }
+	@Override
+	public List<String> toList() {
+		return new ArrayList<>(cards);
+	}
 }

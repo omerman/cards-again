@@ -104,17 +104,22 @@ public abstract class PlayerService {
         Player p = getPlayer(gId,pId,true);
         return new JsonObject()
                 .putString("userName",getPlayerUserName(pId))
-                .putNumber("cardsNum", p.getCardIds().size());
+		        .putNumber("cardsNum", p.getCardIds().size())
+		        .putBoolean("isReady", p.isReady());
     }
 
-    public void setReady(String gId, String pId, boolean isReady) {
-        Player p = getPlayer(gId,pId,true);
-        p.setReady(isReady);
+	public void toggleReady(String gId, String pId) {
+		Player p = getPlayer(gId, pId, true);
+		p.setReady(!p.isReady());
+	}
+
+	public boolean isPlayerExists(String gId, String pId) {
+		return null != getPlayer(gId,pId,false);
     }
 
-    public boolean isPlayerInGame(String gId, String pId) {
-        return null != getPlayer(gId,pId,false);
-    }
+	public boolean isOutOfCards(String gId, String pId) {
+		return getCardsSize(gId, pId) == 0;
+	}
 
     public boolean isHavingCardId(String gId,String pId,String cId) {
         return getPlayer(gId,pId,true).getCardIds().contains(cId);
@@ -161,5 +166,11 @@ public abstract class PlayerService {
 		for(String cardId : cardsIds) {
 			addCardId(gId, pId, cardId, thrower);
 		}
+	}
+
+	public void resetPlayer(String gId, String pId) {
+		Player p = getPlayer(gId, pId, true);
+		p.setReady(false);
+		p.clearCards();
 	}
 }

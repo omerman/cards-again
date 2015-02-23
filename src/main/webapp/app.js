@@ -20,51 +20,57 @@ define(
         'directives/Destroyer',
         'js/angularVertxbus',
         'interact'],
-    function (angularAMD,Router,Page,Login,Navigation,CreateGame,GamesList,Watch,Play,Game,Deck,Player,MyHand,OppHand,Card,MyCard,Yack,YackPair,Destroyer) {
+    function (angularAMD, Router, Page, Login, Navigation, CreateGame, GamesList, Watch, Play, Game, Deck, Player, MyHand, OppHand, Card, MyCard, Yack, YackPair, Destroyer) {
 
-    var app = angular.module("webapp", ['ngRoute','knalli.angular-vertxbus']);
+        var app = angular.module("webapp", ['ngRoute', 'knalli.angular-vertxbus']);
 
 
-    app.directive("page",Page);//parent directive.
-    app.directive("login",Login);//parent directive.
-    app.directive("navigation",Navigation);
-    app.directive("createGame",CreateGame);
-    app.directive("gamesList",GamesList);
-    app.directive("watch",Watch);
-    app.directive("play",Play);
-    app.directive("game",Game);
-    app.directive("deck",Deck);
-    app.directive("player",Player);
-    app.directive("myHand",MyHand);
-    app.directive("oppHand",OppHand);
-    app.directive("myCard",MyCard);
-    app.directive("card",Card);
-    app.directive("yack",Yack);
-    app.directive("yackPair",YackPair);
-    app.directive("autoUnregister",Destroyer);
+        app.directive("page", Page);//parent directive.
+        app.directive("login", Login);//parent directive.
+        app.directive("navigation", Navigation);
+        app.directive("createGame", CreateGame);
+        app.directive("gamesList", GamesList);
+        app.directive("watch", Watch);
+        app.directive("play", Play);
+        app.directive("game", Game);
+        app.directive("deck", Deck);
+        app.directive("player", Player);
+        app.directive("myHand", MyHand);
+        app.directive("oppHand", OppHand);
+        app.directive("myCard", MyCard);
+        app.directive("card", Card);
+        app.directive("yack", Yack);
+        app.directive("yackPair", YackPair);
+        app.directive("autoUnregister", Destroyer);
 
-    app.config(['vertxEventBusProvider','$routeProvider',function(vertxEventBusProvider,$routeProvider) {
+        app.config(['vertxEventBusProvider', '$routeProvider', function (vertxEventBusProvider, $routeProvider) {
 
-        vertxEventBusProvider
-            .enable()
-            .useReconnect()
-            .useUrlServer('http://localhost:8080');
+            var hostUrlArr = window.location.href.split("/");
 
-        $routeProvider
-            .when("/createGame", angularAMD.route({
-            template: "<create-game></create-game>"
-            }))
-            .when("/play/:gId", angularAMD.route({
-                template: function(params){return "<play g-id="+params.gId+"></play>"}
-            }))
-            .when("/watch/:gId", angularAMD.route({
-                template: function(params){return "<watch g-id="+params.gId+"></watch>"}
-            }))
-            .when("/login", angularAMD.route({
-                template: "<login></login>"
-            }))
-            .otherwise("/")
-    }]);
+            vertxEventBusProvider
+                .enable()
+                .useReconnect()
+                .useUrlServer(hostUrlArr[0] + "//" + hostUrlArr[2]);
 
-    return angularAMD.bootstrap(app);
-});
+            $routeProvider
+                .when("/createGame", angularAMD.route({
+                    template: "<create-game></create-game>"
+                }))
+                .when("/play/:gId", angularAMD.route({
+                    template: function (params) {
+                        return "<play g-id=" + params.gId + "></play>"
+                    }
+                }))
+                .when("/watch/:gId", angularAMD.route({
+                    template: function (params) {
+                        return "<watch g-id=" + params.gId + "></watch>"
+                    }
+                }))
+                .when("/login", angularAMD.route({
+                    template: "<login></login>"
+                }))
+                .otherwise("/")
+        }]);
+
+        return angularAMD.bootstrap(app);
+    });

@@ -6,6 +6,7 @@ import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
 import project.cards.objects.impl.Game;
 import project.cards.objects.impl.Player;
+import project.cards.services.game.durak.PlayerServiceImpl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +22,25 @@ public abstract class GameService{
 
     protected Map<String,Game> games = new HashMap<>();
 
+	public abstract DeckService getDeckService();
+
+	public abstract PlayerService getPlayerService();
+
+	public abstract YackService<?> getYackService();
+
     protected abstract int getInitialCardsNum();
     protected abstract int getMaxPlayers();
     protected abstract int getMinimumPlayers();
 
-    public abstract DeckService getDeckService();
-    public abstract PlayerService getPlayerService();
+	protected abstract void completeHand(String gId, int index);
+
+	protected abstract boolean isGameOver(String gId);
+
+	protected abstract boolean isPlayerStillInGame(String gId, String pId);
+
+	public boolean isPlayerStillInGame(String gId, int index) {
+		return isPlayerStillInGame(gId, getPlayerPId(gId, index));
+	}
 
     public void addPlayer(String gId,String pId) {
 
@@ -37,8 +51,8 @@ public abstract class GameService{
 
     public void joinGame(String gId,String pId) {
 
-        if(getPlayerService().isPlayerInGame(gId, pId)) {//player already in the game, do nothing.
-            return;
+	    if(getPlayerService().isPlayerExists(gId, pId)) {//player already in the game, do nothing.
+		    return;
         }
 
         if(!isGameFull(gId)) {
@@ -77,10 +91,22 @@ public abstract class GameService{
             }
         }
 
-        g.setStarted(true);
+	    g.setEnded(false);
+	    g.setStarted(true);
     }
 
-	protected abstract void completeHand(String gId, int index);
+	public void endGame(String gId) {
+		Game g = getGame(gId, true);
+		g.setStarted(false);
+		g.setEnded(true);
+
+		for(String pId : g.getPlayerIds()) {
+			PlayerServiceImpl.getInstance().resetPlayer(gId, pId);
+		}
+
+		getFlowService().removeFlow(gId);
+		getYackService().removeYack(gId);
+	}
 
     public List<String> getPlayersIds(String gId) {
         return getGame(gId,true).getPlayerIds();
@@ -117,6 +143,11 @@ public abstract class GameService{
         return g.isStarted();
     }
 
+	public Boolean isGameEnded(String gId) {
+		Game g = getGame(gId, true);
+		return g.isEnded();
+	}
+
     public boolean isReadyToStart(String gId) {
         Game g = getGame(gId,true);
         if(g.getPlayerIds().size() <getMinimumPlayers()) {//if not enough players.
@@ -137,7 +168,18 @@ public abstract class GameService{
 
 	public int getNextPlayerPos(String gId, int playerPos) {
 		int playerSize = getPlayersIds(gId).size();
-		return (playerPos + 1) % playerSize;
+		int nextPlayerPos = (playerPos + 1) % playerSize;
+		while(!isPlayerStillInGame(gId, getPlayerPId(gId, nextPlayerPos))) {
+			if(nextPlayerPos == playerPos) {//If we have completed a cycle.
+				return playerPos;
+			}
+			nextPlayerPos = (nextPlayerPos + 1) % playerSize;
+		}
+		return nextPlayerPos;
+	}
+
+	public int getNextPlayerPos(String gId, String pId) {
+		return getNextPlayerPos(gId, getPlayerPosIdx(gId, pId));
 	}
 
     public int getPlayerPosIdx(String gId, String pId) {
@@ -184,21 +226,35 @@ public abstract class GameService{
 
     public JsonObject getJsonGameInfo(String gId) {
         boolean isGameStarted = isGameStarted(gId);
-        JsonObject gameInfo = new JsonObject()
+	    boolean isGameEnded = isGameEnded(gId);
+	    JsonObject gameInfo = new JsonObject()
                 .putBoolean("isStarted", isGameStarted)
-                .putArray("players", getJsonGamePlayers(gId));
+		        .putBoolean("isEnded", isGameEnded)
+			    .putArray("players", getJsonGamePlayers(gId));
 
         if(isGameStarted) {
-            gameInfo
-		            .putObject("deckInfo", getDeckService().getJsonDeck(gId))
-		            .putObject("flowInfo", getFlowService().getJsonFlow(gId))
-		            .putArray("yackInfo", getYackService().getJsonYack(gId));
+	        populateJsonGameStartedInfo(gameInfo, gId);
         }
+	    if(isGameEnded) {
+		    populateJsonGameEndedInfo(gameInfo, gId);
+	    }
 
         return gameInfo;
     }
 
-    protected abstract YackService<?> getYackService();
+	protected void populateJsonGameStartedInfo(JsonObject gameInfo, String gId) {
+		//Override me for more.. :)
+		gameInfo
+				.putObject("deckInfo", getDeckService().getJsonDeck(gId))
+				.putObject("flowInfo", getFlowService().getJsonFlow(gId))
+				.putArray("yackInfo", getYackService().getJsonYack(gId));
+	}
+
+	protected void populateJsonGameEndedInfo(JsonObject gameInfo, String gId) {
+		//Override me for more.. :)
+	}
+
+
 
     public boolean isGameEmpty(String gId) {
         return getGame(gId,true).getPlayerIds().size() == 0;
@@ -214,4 +270,5 @@ public abstract class GameService{
 	public abstract FlowService<?, ?> getFlowService();
 
 	public abstract void handleAction(String gId, String pId, JsonObject jsonParams);
+
 }
