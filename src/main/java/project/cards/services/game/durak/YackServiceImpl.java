@@ -104,6 +104,4 @@ public class YackServiceImpl extends YackService<DurakYack> {
 		}
 		return counterFrontCards;
 	}
-
-
 }

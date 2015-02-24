@@ -178,6 +178,10 @@ public abstract class GameService{
 		return nextPlayerPos;
 	}
 
+	public String getNextPlayerPId(String gId, String pId) {
+		return getPlayerPId(gId, getNextPlayerPos(gId, getPlayerPosIdx(gId, pId)));
+	}
+
 	public int getNextPlayerPos(String gId, String pId) {
 		return getNextPlayerPos(gId, getPlayerPosIdx(gId, pId));
 	}

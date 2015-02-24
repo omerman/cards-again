@@ -104,32 +104,31 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 						return false;
 					}
 					/**
-					 * The Attack action is valid when :
-					 *
-					 *  its the attacker's turn :) (which means no cards are on the floor yet)
-					 *  OR
-					 *      everyone can put cards AND the attacker is not the target( OR he is the target but he is allowed to keep the flow going..(Transferring rule!) ).
-					 *      and
-					 *      attacking card is not empty.
-					 *      and
-					 *      attacking card's rank is on the floor(yack)
-					 *      and
-					 *      the floor(yack) size did not reach limit
-					 *      and
-					 *      the attacked player has more cards than the floor
+					 mandatory:
+					 1)attack card is not empty.
+					 2)initiator is starting the turn OR the attack card exists on the floor.
 
+					 if the initiator is not the target(some on attacks the defender)
+					 return floor is not full for the defender to handle.
+
+					 otherwise(transfering rule)
+					 return floor is not full for the NEXT defender to handle.
 					 */
-					return initiatorPlayerPosIndex == currentTurnIndex
-							||
-							(-1 == currentTurnIndex
+					boolean mandatoryRequirements =
+							!StringUtil.isNullOrEmpty(attackingCardId)
 									&&
-									(!initiatorPId.equals(targetPId) || (YackServiceImpl.getInstance().getFrontCardsSize(gId) == 0 && !f.isDefenderCollecting()))
-									&&
-									!StringUtil.isNullOrEmpty(attackingCardId)
-									&&
-									YackServiceImpl.getInstance().isRankExists(gId, Card.getById(attackingCardId).getRank())
-									&&
-									!isMaxAttackExceeded(gId));
+									(
+											initiatorPlayerPosIndex == currentTurnIndex
+													||
+													YackServiceImpl.getInstance().isRankExists(gId, Card.getById(attackingCardId).getRank())
+									);
+					if(mandatoryRequirements) {
+						if(!initiatorPId.equals(targetPId)) {
+							return isMaxAttackExceeded(gId, getCurrentDefenderPId(gId));
+						} else {
+							return isMaxAttackExceeded(gId, GameServiceImpl.getInstance().getNextPlayerPId(gId, initiatorPId));
+						}
+					}
 				case DurakAction.Types.ANSWER:
 					attackingCardId = durakAction.getAttackCardId();
 					String answeringCardId = durakAction.getAnswerCardId();
@@ -196,12 +195,11 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 		return getFlow(gId).isDefenderCollecting() || isDefenseDone(gId);
 	}
 
-	private boolean isMaxAttackExceeded(String gId) {
-		String targetPId = getCurrentDefenderPId(gId);
+	private boolean isMaxAttackExceeded(String gId, String targetPId) {
 		int currentYackSize = YackServiceImpl.getInstance().getYackSize(gId);
 		return YackServiceImpl.MAX_YACK_SIZE == currentYackSize
 				||
-				PlayerServiceImpl.getInstance().getCardsSize(gId, targetPId) == YackServiceImpl.getInstance().getUnAnsweredCards(gId);
+				PlayerServiceImpl.getInstance().getCardsSize(gId, targetPId) <= YackServiceImpl.getInstance().getUnAnsweredCards(gId);
 	}
 
 	@Override
@@ -216,16 +214,10 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 
 				flow.setCurrentPlayerTurnIndex(-1);
 
-				//If game is over after this attack..
-				if(!GameServiceImpl.getInstance().isGameOver(gId)) {
-					stopFlow(gId);
-					return;
-				}
-
 				//Transferring rule
 				if(getCurrentDefenderPId(gId).equals(durakAction.getInitiatorPId())) {
 					increaseFlowAfterTransfering(gId);
-				} else if(flow.isDefenderCollecting() && isMaxAttackExceeded(gId)) {//defender requested collection and no room for further more cards.
+				} else if(flow.isDefenderCollecting() && isMaxAttackExceeded(gId, getCurrentDefenderPId(gId))) {//defender requested collection and no room for further more cards.
 					endTurnAfterCollection(gId);
 				} else {//just incase, remove the player from done attacking incase he is in there.
 					flow.getDoneAttackingUsers().remove(PlayerServiceImpl.getInstance().getPlayerUserName(durakAction.getInitiatorPId()));
@@ -236,12 +228,12 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 				PlayerServiceImpl.getInstance().removeCardId(gId, durakAction.getInitiatorPId(), answeringCardId, true);
 				YackServiceImpl.getInstance().addFrontCardId(gId, durakAction.getAttackCardId(), answeringCardId);
 
-				if(isDefenseDone(gId) && isMaxAttackExceeded(gId)) {//defender answered all cards on floor, and no room for further more cards.
+				if(isDefenseDone(gId) && isMaxAttackExceeded(gId, getCurrentDefenderPId(gId))) {//defender answered all cards on floor, and no room for further more cards.
 					endTurnWithoutCollection(gId);
 				}
 				break;
 			case DurakAction.Types.COLLECT:
-				if(isMaxAttackExceeded(gId)) {//defender requested collection and no room for further more cards.
+				if(isMaxAttackExceeded(gId, getCurrentDefenderPId(gId))) {//defender requested collection and no room for further more cards.
 					endTurnAfterCollection(gId);
 				} else {
 					flow.resetDoneAttackingUsers();
@@ -250,7 +242,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 				break;
 			case DurakAction.Types.DONE_ATTACKING:
 				toggleDoneAttackingUser(flow, durakAction.getInitiatorPId());
-				if(GameServiceImpl.getInstance().getLosers(gId).size() == flow.getDoneAttackingUsers().size() + 1) {//all players are done attacking.
+				if(GameServiceImpl.getInstance().getPlayersInGame(gId).size() == flow.getDoneAttackingUsers().size() + 1) {//all players are done attacking.
 					if(flow.isDefenderCollecting()) {
 						endTurnAfterCollection(gId);
 					} else {
@@ -258,6 +250,11 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 					}
 				}
 				break;
+		}
+		//If game is over after this attack..
+		if(GameServiceImpl.getInstance().isGameOver(gId)) {
+			stopFlow(gId);
+			return;
 		}
 
 	}
@@ -341,11 +338,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 
 	@Override
 	protected void initNextFlow(String gId) {
-		if(GameServiceImpl.getInstance().isGameOver(gId)) {
-			stopFlow(gId);
-		} else {
-			resetFlow(gId);
-		}
+		resetFlow(gId);
 	}
 
 	/**

@@ -10,7 +10,10 @@ import project.cards.services.game.GameService;
 import project.cards.services.game.PlayerService;
 import project.cards.services.game.YackService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by omerpr on 23/01/2015.
@@ -19,8 +22,11 @@ public class GameServiceImpl extends GameService {
 
 	private static final Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
 	private static GameServiceImpl instance = null;
+	private static Map<String, String> losers;
+
 
 	private GameServiceImpl() {
+		losers = new HashMap<>();
 	}
 
 	public static GameServiceImpl getInstance() {
@@ -76,8 +82,15 @@ public class GameServiceImpl extends GameService {
 	}
 
 	@Override
+	public void endGame(String gId) {
+		//putting the first player that is still in game, making him the loser.
+		losers.put(gId, getPlayersInGame(gId).iterator().next());
+		super.endGame(gId);
+	}
+
+	@Override
 	protected boolean isGameOver(String gId) {
-		return getLosers(gId).size() == 1;
+		return getPlayersInGame(gId).size() == 1;
 	}
 
 	@Override
@@ -85,7 +98,7 @@ public class GameServiceImpl extends GameService {
 		return !getDeckService().isEmpty(gId) || getPlayerService().getCardsSize(gId, pId) > 0;
 	}
 
-	public Set<String> getLosers(String gId) {
+	public Set<String> getPlayersInGame(String gId) {
 		Set<String> losers = new HashSet<>(2);
 		for(String pId : getPlayersIds(gId)) {
 			if(isPlayerStillInGame(gId, pId)) {
@@ -98,7 +111,7 @@ public class GameServiceImpl extends GameService {
 	@Override
 	protected void populateJsonGameEndedInfo(JsonObject gameInfo, String gId) {
 		super.populateJsonGameEndedInfo(gameInfo, gId);
-		gameInfo.putString("loser", getLosers(gId).iterator().next());
+		gameInfo.putString("loser", losers.get(gId));
 	}
 
 	@Override
