@@ -62,7 +62,8 @@ public class DeckServiceImpl extends DeckService {
 	@Override
 	public JsonObject getJsonDeck(String gId) {
 		return new JsonObject().putNumber("size", getFakeSize(gId))
-				.putObject("strongCard", getJsonStrongCard(gId));
+				.putObject("strongCard", getJsonStrongCard(gId))
+				.putNumber("strongCardSuit", gamesToStrongCardSuits.get(gId));
 	}
 
 }

@@ -1,24 +1,28 @@
 html {
-	height:100%;
-	width:100%;
+    height: 100%;
+    width: 100%;
 }
+
 /*div {
 	height: 100%;
 }*/
 #pageWrapper {
-    height:100%;
+    height: 100%;
 }
+
 .floatLeft {
-	float:left;
+    float: left;
 }
+
 .floatRight {
-	float:right;
+    float: right;
 }
+
 body {
     font: auto Helvetica;
     background: #999999;
-    height:100%;
-    width:99%;
+    height: 100%;
+    width: 99%;
     margin: 0 0px 0 8px;
     padding: 0;
 }
@@ -28,7 +32,7 @@ body {
     margin: 0px;
     padding: 0px;
     display: -webkit-flex;
-    display:         flex;
+    display: flex;
     -webkit-flex-flow: row;
     flex-flow: row;
 }
@@ -43,11 +47,11 @@ body {
     flex: 3 1 60%;
     -webkit-order: 2;
     order: 2;
-    height:100%;
+    height: 100%;
 }
 
 #main > .mainFrame > [ng-view] {
-    height:inherit;
+    height: inherit;
 }
 
 #main > .mainFrame .title {
@@ -61,30 +65,30 @@ body {
     margin: 0;
 }
 
-#main > .mainFrame .field label{
+#main > .mainFrame .field label {
     color: rgb(105, 51, 51);
     width: 100px;
     padding: 5px;
-    display:inline-block;
+    display: inline-block;
 }
 
-#main > .mainFrame .field input{
-    border:none;
-    background:rgb(255, 238, 187);
+#main > .mainFrame .field input {
+    border: none;
+    background: rgb(255, 238, 187);
 }
 
 #main > .sideBar {
-   margin: 4px;
-   padding: 0;
-   border: 1px solid #8888bb;
-   border-radius: 7pt;
-   background: #ccccff;
-   -webkit-flex: 1 6 20%;
-           flex: 1 6 20%;
-   -webkit-order: 1;
-           order: 1;
-    max-width:250px;
-    height:100%;
+    margin: 4px;
+    padding: 0;
+    border: 1px solid #8888bb;
+    border-radius: 7pt;
+    background: #ccccff;
+    -webkit-flex: 1 6 20%;
+    flex: 1 6 20%;
+    -webkit-order: 1;
+    order: 1;
+    max-width: 250px;
+    height: 100%;
 }
 
 #main > aside {
@@ -94,9 +98,9 @@ body {
     border-radius: 7pt;
     background: #ccccff;
     -webkit-flex: 1 6 20%;
-           flex: 1 6 20%;
+    flex: 1 6 20%;
     -webkit-order: 3;
-           order: 3;
+    order: 3;
 }
 
 header, footer {
@@ -106,13 +110,12 @@ header, footer {
     border: 1px solid #eebb55;
     border-radius: 7pt;
     background: #ffeebb;
-    min-height:10px;
+    min-height: 10px;
 }
 
 header {
     height: 10%;
 }
-
 
 .upsideDown {
     -ms-transform: rotate(180deg); /* IE 9 */
@@ -120,26 +123,27 @@ header {
     transform: rotate(180deg);
 }
 
-  /* Too narrow to support three columns */
+/* Too narrow to support three columns */
 @media all and (max-width: 640px) {
 
-      #main, #page {
-          -webkit-flex-flow: column;
-          flex-flow: column;
-          flex-direction: column;
-      }
+    #main, #page {
+        -webkit-flex-flow: column;
+        flex-flow: column;
+        flex-direction: column;
+    }
 
-      #main > .mainFrame, #main > .sideBar, #main > aside {
-          /* Return them to document order */
-          -webkit-order: 0;
-          order: 0;
-      }
+    #main > .mainFrame, #main > .sideBar, #main > aside {
+        /* Return them to document order */
+        -webkit-order: 0;
+        order: 0;
+    }
 
-      #main > .sideBar, #main > aside, header, footer {
-          min-height: 50px;
-          max-height: 50px;
-      }
+    #main > .sideBar, #main > aside, header, footer {
+        min-height: 50px;
+        max-height: 50px;
+    }
 }
+
 .gamesList > * {
     background: rgb(255, 238, 187);
     border-radius: 7pt;
@@ -148,16 +152,16 @@ header {
     cursor: pointer;
     word-spacing: 5px;
     text-align: center;
-    display:block;
+    display: block;
     text-decoration: none;
-    color:rgb(105, 51, 51);
+    color: rgb(105, 51, 51);
 }
 
 .gamesList > *:hover {
     padding: 7px;
     color: rgb(204, 204, 255);
     box-shadow: 1px 3px 3px 1px #000;
-    margin:1px;
+    margin: 1px;
 }
 
 .centerButtons {
@@ -169,8 +173,9 @@ header {
     -webkit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
-    padding-top:7px;
+    padding-top: 7px;
 }
+
 .centerButtons .button {
     align-self: center;
 }
@@ -192,13 +197,16 @@ header {
     text-decoration: none;
     display: inline-block;
 }
+
 .smallerButton {
     padding: 2px;
 }
+
 .smallestButton {
     padding: 2px;
     font-size: small;
 }
+
 .button:hover {
     background: #3cb0fd !important;
     background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
@@ -209,11 +217,13 @@ header {
     text-decoration: none;
     cursor: pointer;
 }
-.button.clicked {
-    border:dashed;
+
+.button.active {
+    border: dashed;
 }
+
 p.message {
-    padding:0;
+    padding: 0;
     color: indianred;
     height: 0;
 }

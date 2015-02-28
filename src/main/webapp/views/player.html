@@ -2,7 +2,12 @@
     <span class="playerName">{{data.playerName}}</span>
     <img ng-if="data.isLoser" class="loser" src="images/loser.jpg" style="width:35px;height:35px;border-radius:50%"/>
     <span ng-if="!data.isLoser"
-          class="player-display{{data.defender ?' defender' :''}}{{data.isFirstAttacker ?' firstAttacker' :''}}{{data.isLoser ?' loser' :''}}">
+          class="player-display
+          {{data.defender ?' defender' :''}}
+          {{data.isFirstAttacker ?' firstAttacker' :''}}
+          {{data.isPlayerReady ?' ready' :''}}
+          {{data.isPlayerDone ?' done' :''}}
+          {{data.isLoser ?' loser' :''}}">
         <div class="head"></div>
         <div class="body shoulders"></div>
         <div class="body waist"></div>

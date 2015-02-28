@@ -63,11 +63,6 @@ public class GameServiceImpl extends GameService {
 	}
 
 	@Override
-	public void startGame(String gId) {
-		super.startGame(gId);
-	}
-
-	@Override
 	protected void completeHand(String gId, int index) {
 		logger.info("completeHand start.");
 

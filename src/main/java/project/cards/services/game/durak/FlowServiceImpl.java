@@ -7,9 +7,11 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
+import project.cards.ApplicationServer;
 import project.cards.objects.durak.DurakAction;
 import project.cards.objects.durak.DurakFlow;
 import project.cards.objects.impl.Card;
+import project.cards.services.VertxService;
 import project.cards.services.game.FlowService;
 
 import java.util.ArrayList;
@@ -92,97 +94,103 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 
 
 		if(PlayerServiceImpl.getInstance().isPlayerExists(gId, initiatorPId)) {//If the player initiated this action is part of the game.
-			int initiatorPlayerPosIndex = GameServiceImpl.getInstance().getPlayerPosIdx(gId, initiatorPId);
-			int currentTurnIndex = f.getCurrentPlayerTurnIndex();
 			String targetPId = getCurrentDefenderPId(gId);
-			String attackingCardId;
-			switch(durakAction.getType()) {
-				case DurakAction.Types.ATTACK:
-					attackingCardId = durakAction.getAttackCardId();
-					//first validate attacker owns the card he attacks with.
-					if(!PlayerServiceImpl.getInstance().isHavingCardId(gId, initiatorPId, attackingCardId)) {
-						return false;
-					}
-					/**
-					 mandatory:
-					 1)attack card is not empty.
-					 2)initiator is starting the turn OR the attack card exists on the floor.
+			if(null != targetPId) {
 
-					 if the initiator is not the target(some on attacks the defender)
-					 return floor is not full for the defender to handle.
-
-					 otherwise(transfering rule)
-					 return floor is not full for the NEXT defender to handle.
-					 */
-					boolean mandatoryRequirements =
-							!StringUtil.isNullOrEmpty(attackingCardId)
-									&&
-									(
-											initiatorPlayerPosIndex == currentTurnIndex
-													||
-													YackServiceImpl.getInstance().isRankExists(gId, Card.getById(attackingCardId).getRank())
-									);
-					if(mandatoryRequirements) {
-						if(!initiatorPId.equals(targetPId)) {
-							return isMaxAttackExceeded(gId, getCurrentDefenderPId(gId));
-						} else {
-							return isMaxAttackExceeded(gId, GameServiceImpl.getInstance().getNextPlayerPId(gId, initiatorPId));
+				String attackingCardId;
+				switch(durakAction.getType()) {
+					case DurakAction.Types.ATTACK:
+						int currentTurnIndex = f.getCurrentPlayerTurnIndex();
+						int initiatorPlayerPosIndex = GameServiceImpl.getInstance().getPlayerPosIdx(gId, initiatorPId);
+						attackingCardId = durakAction.getAttackCardId();
+						//first validate attacker owns the card he attacks with.
+						if(!PlayerServiceImpl.getInstance().isHavingCardId(gId, initiatorPId, attackingCardId)) {
+							return false;
 						}
-					}
-				case DurakAction.Types.ANSWER:
-					attackingCardId = durakAction.getAttackCardId();
-					String answeringCardId = durakAction.getAnswerCardId();
-					Card answeringCard = Card.getById(answeringCardId);
-					Card attackingCard = Card.getById(attackingCardId);
+						/**
+						 mandatory:
+						 1)attack card is not empty.
+						 2)initiator is starting the turn OR the attack card exists on the floor.
 
-					//first validate defender owns the card he defends with.
-					if(!PlayerServiceImpl.getInstance().isHavingCardId(gId, initiatorPId, answeringCardId)) {
+						 if the initiator is not the target(some on attacks the defender)
+						 return floor is not full for the defender to handle.
+
+						 otherwise(transfering rule)
+						 return floor is not full for the NEXT defender to handle.
+						 */
+						boolean mandatoryRequirements =
+								!StringUtil.isNullOrEmpty(attackingCardId)
+										&&
+										(
+												initiatorPlayerPosIndex == currentTurnIndex
+														||
+														YackServiceImpl.getInstance().isRankExists(gId, Card.getById(attackingCardId).getRank())
+										);
+						if(mandatoryRequirements) {
+							if(!initiatorPId.equals(targetPId)) {
+								return !isMaxAttackExceeded(gId, getCurrentDefenderPId(gId));
+							} else {
+								return !isMaxAttackExceeded(gId, GameServiceImpl.getInstance().getNextPlayerPId(gId, initiatorPId));
+							}
+						}
+					case DurakAction.Types.ANSWER:
+						attackingCardId = durakAction.getAttackCardId();
+						String answeringCardId = durakAction.getAnswerCardId();
+						Card answeringCard = Card.getById(answeringCardId);
+						Card attackingCard = Card.getById(attackingCardId);
+
+						//first validate defender owns the card he defends with.
+						if(!PlayerServiceImpl.getInstance().isHavingCardId(gId, initiatorPId, answeringCardId)) {
+							return false;
+						}
+
+						/**
+						 * The Answer action is valid when :
+						 *
+						 *      the initiator of the attack is targeted(check that the defender actually is the defender....).
+						 *      and
+						 *      defender is not already collecting the cards
+						 *      and
+						 *      attacking card is not empty
+						 *      and
+						 *      answering card is not empty.
+						 *      and
+						 *      card is not already answered on!
+						 *      (if same suit, validate the answer is stronger.
+						 *      otherwise, check if the player answered with a strong card.)
+						 */
+
+						return initiatorPId.equals(targetPId)
+								&&
+								!f.isDefenderCollecting()
+								&&
+								!StringUtil.isNullOrEmpty(attackingCardId)
+								&&
+								!StringUtil.isNullOrEmpty(answeringCardId)
+								&&
+								!YackServiceImpl.getInstance().isBackCardAnswered(gId, attackingCardId, true)
+								&&
+								(answeringCard.getSuit() == attackingCard.getSuit()
+										?answeringCard.compareTo(attackingCard) > 0
+										:DeckServiceImpl.getInstance().isStrongCard(gId, answeringCard));
+
+					case DurakAction.Types.COLLECT:
+						return initiatorPId.equals(targetPId)
+								&&
+								isCollectingPossible(gId);
+
+					case DurakAction.Types.DONE_ATTACKING:
+						return !initiatorPId.equals(targetPId)
+								&&
+								GameServiceImpl.getInstance().isPlayerStillInGame(gId, initiatorPId)
+								&&
+								isDoneAttackingPossible(gId);
+					default:
 						return false;
-					}
-
-					/**
-					 * The Answer action is valid when :
-					 *
-					 *      the initiator of the attack is targeted(check that the defender actually is the defender....).
-					 *      and
-					 *      attacking card is not empty
-					 *      and
-					 *      answering card is not empty.
-					 *      and
-					 *      card is not already answered on!
-					 *      (if same suit, validate the answer is stronger.
-					 *      otherwise, check if the player answered with a strong card.)
-					 */
-
-					return initiatorPId.equals(targetPId)
-							&&
-							!StringUtil.isNullOrEmpty(attackingCardId)
-							&&
-							!StringUtil.isNullOrEmpty(answeringCardId)
-							&&
-							!YackServiceImpl.getInstance().isBackCardAnswered(gId, attackingCardId, true)
-							&&
-							(answeringCard.getSuit() == attackingCard.getSuit()
-									?answeringCard.compareTo(attackingCard) > 0
-									:DeckServiceImpl.getInstance().isStrongCard(gId, answeringCard));
-
-				case DurakAction.Types.COLLECT:
-					return initiatorPId.equals(targetPId)
-							&&
-							isCollectingPossible(gId);
-
-				case DurakAction.Types.DONE_ATTACKING:
-					return !initiatorPId.equals(targetPId)
-							&&
-							GameServiceImpl.getInstance().isPlayerStillInGame(gId, initiatorPId)
-							&&
-							isDoneAttackingPossible(gId);
-				default:
-					return false;
+				}
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	private boolean isCollectingPossible(String gId) {
@@ -203,7 +211,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 	}
 
 	@Override
-	protected void doAction(String gId, DurakAction durakAction) {
+	protected void doAction(final String gId, DurakAction durakAction) {
 
 		DurakFlow flow = getFlow(gId);
 		switch(durakAction.getType()) {
@@ -218,7 +226,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 				if(getCurrentDefenderPId(gId).equals(durakAction.getInitiatorPId())) {
 					increaseFlowAfterTransfering(gId);
 				} else if(flow.isDefenderCollecting() && isMaxAttackExceeded(gId, getCurrentDefenderPId(gId))) {//defender requested collection and no room for further more cards.
-					endTurnAfterCollection(gId);
+					endTurnAfterCollection(gId, 3000);
 				} else {//just incase, remove the player from done attacking incase he is in there.
 					flow.getDoneAttackingUsers().remove(PlayerServiceImpl.getInstance().getPlayerUserName(durakAction.getInitiatorPId()));
 				}
@@ -229,7 +237,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 				YackServiceImpl.getInstance().addFrontCardId(gId, durakAction.getAttackCardId(), answeringCardId);
 
 				if(isDefenseDone(gId) && isMaxAttackExceeded(gId, getCurrentDefenderPId(gId))) {//defender answered all cards on floor, and no room for further more cards.
-					endTurnWithoutCollection(gId);
+					endTurnWithoutCollection(gId, 3000);
 				}
 				break;
 			case DurakAction.Types.COLLECT:
@@ -254,16 +262,20 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 		//If game is over after this attack..
 		if(GameServiceImpl.getInstance().isGameOver(gId)) {
 			stopFlow(gId);
-			return;
 		}
-
 	}
 
 	@Override
-	protected void stopFlow(String gId) {
+	protected void stopFlow(final String gId) {
 		resetFlow(gId);
-		increaseFlow(gId, -1, -1);
-		GameServiceImpl.getInstance().endGame(gId);
+		increaseFlow(gId, -1, -1);//set the flow impossible to be increased..
+		VertxService.getVertx().setTimer(3000, new Handler<Long>() {
+			@Override
+			public void handle(Long event) {
+				GameServiceImpl.getInstance().endGame(gId);
+				ApplicationServer.getEventBusService().publishGameInfoUpdate(gId);//end the game.
+			}
+		});
 	}
 
 
@@ -275,6 +287,16 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 	private boolean isDefenseDone(String gId) {
 		return YackServiceImpl.getInstance().getBackCardsSize(gId) > 0
 				&& YackServiceImpl.getInstance().getUnAnsweredCards(gId) == 0;
+	}
+
+	private void endTurnAfterCollection(final String gId, long delay) {
+		VertxService.getVertx().setTimer(delay, new Handler<Long>() {
+			@Override
+			public void handle(Long event) {
+				endTurnAfterCollection(gId);
+				ApplicationServer.getEventBusService().publishGameInfoUpdate(gId);
+			}
+		});
 	}
 
 	private void endTurnAfterCollection(String gId) {
@@ -294,6 +316,16 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 		increaseFlow(gId, nextPlayerIndex, GameServiceImpl.getInstance().getNextPlayerPos(gId, nextPlayerIndex));
 
 		initNextFlow(gId);
+	}
+
+	private void endTurnWithoutCollection(final String gId, long delay) {
+		VertxService.getVertx().setTimer(delay, new Handler<Long>() {
+			@Override
+			public void handle(Long event) {
+				endTurnWithoutCollection(gId);
+				ApplicationServer.getEventBusService().publishGameInfoUpdate(gId);
+			}
+		});
 	}
 
 	private void endTurnWithoutCollection(String gId) {

@@ -12,23 +12,23 @@
         </div>
     </div>
     <yack yack-info="data.yackInfo"></yack>
-    <div class="vertical">
-        <div class="playerWrapper" ng-if="isPlayerExists(3)">
-            <player player-data="getPlayerData(3)"></player>
+    <div class="vertical" ng-if="isPlayerExists(3)">
+        <div class="playerWrapper">
+        <player player-data="getPlayerData(3)"></player>
         </div>
-        <opp-hand ng-if="isPlayerExists(3)" cards-num="getPlayerCardsNum(3)"></opp-hand>
+        <opp-hand cards-num="getPlayerCardsNum(3)"></opp-hand>
     </div>
     <div class="horizontal closerPlayer">
         <div class="playerWrapper">
             <player player-data="getPlayerData(0)"></player>
             <div class="centerButtons readyWrapper" ng-if="isHandExists(1)">
-                <span ng-if="!isGameStarted(1)" class="button smallerButton{{isPlayerReady(0,1) ?' clicked' :''}}"
+                <span ng-if="!isGameStarted()" class="button smallerButton{{isPlayerReady(0) ?' active' :''}}"
                       ng-click="readyClick()">Ready</span>
                 <span ng-if="isGameStarted() && isDefender(0) && data.flow.isCollectingPossible"
                       class="button smallerButton{{isDefenderCollecting() ?' active' :''}}"
                       ng-click="collect()">Collect</span>
                 <span ng-if="isGameStarted() && !isDefender(0) && data.flow.isDoneAttackingPossible"
-                      class="button smallerButton{{data.flow.doneAttackingUsers.indexOf(getPlayerName(0)) ?' active' :''}}"
+                      class="button smallerButton{{-1 != data.flow.doneAttackingUsers.indexOf(getPlayerName(0)) ?' active' :''}}"
                       ng-click="doneAttacking()">Done</span>
             </div>
         </div>

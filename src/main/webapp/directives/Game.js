@@ -62,14 +62,18 @@ define([], function () {//<game></game>
                             defenderPosIndex: flowInfo.defenderPosIndex,
                             isCollectingPossible: flowInfo.isCollectingPossible,
                             isDoneAttackingPossible: flowInfo.isDoneAttackingPossible,
-                            isDefenderCollecting: flowInfo.isDefenderCollecting
+                            isDefenderCollecting: flowInfo.isDefenderCollecting,
+                            doneAttackingUsers: flowInfo.doneAttackingUsers
                         };
                     }
                     else {
                         $scope.data.flow = {
                             turnPosIndex: -1,
                             defenderPosIndex: -1,
-                            isCollectingPossible: false
+                            isCollectingPossible: false,
+                            isDoneAttackingPossible: false,
+                            isDefenderCollecting: false,
+                            doneAttackingUsers: []
                         };
                     }
                 };
@@ -78,13 +82,13 @@ define([], function () {//<game></game>
                     if (deckInfo) {
                         $scope.data.deck = {
                             size: deckInfo.size,
-                            strongCard: deckInfo.strongCard
+                            strongCard: deckInfo.strongCard,
+                            strongCardSuit: deckInfo.strongCardSuit
                         }
                     }
                     else {
                         $scope.data.deck = {
-                            size: 0,
-                            strongCard: null
+                            size: 0
                         };
                     }
                 };
@@ -145,10 +149,18 @@ define([], function () {//<game></game>
                             $scope.data.myHand = [];
                         }
                         else {
-                            $scope.data.myHand = data.myHand;
+                            $scope.data.myHand = data.myHand.sort(function (elem1, elem2) {
+                                return  ($scope.isStrongCard(elem1) && !$scope.isStrongCard(elem2)) ||
+                                    !($scope.isStrongCard(elem2) && !$scope.isStrongCard(elem1)) &&
+                                    (elem1.suit * 100) + elem1.rank > (elem2.suit * 100) + elem2.rank;
+                            });
                         }
                         $scope.$broadcast("reloadMyHand");
                     });
+                };
+
+                $scope.isStrongCard = function (card) {
+                    return $scope.data.deck.strongCardSuit === card.suit;
                 };
 
                 $scope.getPlayerCardsNum = function (positionedIndex) {
@@ -173,12 +185,18 @@ define([], function () {//<game></game>
                 };
 
                 $scope.isPlayerReady = function (positionedIndex) {
-
-                    if ($scope.data.isStarted) {
-                        return true;
+                    if ($scope.isGameStarted()) {
+                        return false;
                     }
                     var player = $scope.getPlayerByIndex($scope.getIndexByPositionedIndex(positionedIndex));
                     return player && player.isReady;
+                };
+
+                $scope.isPlayerDone = function (positionedIndex) {
+                    if (!$scope.isGameStarted()) {
+                        return false;
+                    }
+                    return -1 != $scope.data.flow.doneAttackingUsers.indexOf($scope.getPlayerName(positionedIndex));
                 };
 
                 $scope.isDefender = function (positionedIndex) {
@@ -281,7 +299,8 @@ define([], function () {//<game></game>
                     var playerName = $scope.getPlayerName(positionedIndex)
                     return {
                         name: playerName,
-                        isReady: $scope.isPlayerReady(positionedIndex),
+                        isPlayerReady: $scope.isPlayerReady(positionedIndex),
+                        isPlayerDone: $scope.isPlayerDone(positionedIndex),
                         isDefender: $scope.isDefender(positionedIndex),
                         isFirstAttacker: $scope.isFirstAttacker(positionedIndex),
                         isCollecting: $scope.isDefenderCollecting(),

@@ -52,6 +52,12 @@
     border: dashed 5px indianred;
 }
 
+.player-display.ready,
+.player-display.done {
+    -webkit-animation: greenColorInterval 1s infinite;
+    animation: greenColorInterval 1s infinite;
+}
+
 @keyframes defenderColorChange {
     5% {
         background-color: indianred;
@@ -134,6 +140,25 @@
         background-color: lightyellow;
     }
     55% {
+        background-color: #A0C3FF;
+    }
+}
+
+@keyframes greenColorInterval {
+    0% {
+        background-color: lightgreen;
+    }
+    100% {
+        background-color: #A0C3FF;
+    }
+}
+
+@-webkit-keyframes greenColorInterval /* Safari and Chrome */
+{
+    0% {
+        background-color: lightgreen;
+    }
+    100% {
         background-color: #A0C3FF;
     }
 }

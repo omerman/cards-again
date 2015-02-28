@@ -50,6 +50,8 @@ define(
             vertxEventBusProvider
                 .enable()
                 .useReconnect()
+                .useSockJsReconnectInterval(3000)
+                .useSockJsStateInterval(3000)
                 .useUrlServer(hostUrlArr[0] + "//" + hostUrlArr[2]);
 
             $routeProvider

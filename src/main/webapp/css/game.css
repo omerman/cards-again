@@ -71,13 +71,13 @@
 /*Cards config*/
 
 .game .horizontal .hand .card {
-    width: 60px;
+    width: 70px;
     height: 90px;
     margin-left: -30px;
 }
 
 .game .yack .card {
-    width: 60px;
+    width: 70px;
     height: 90px;
 }
 
@@ -87,7 +87,7 @@
 
 .game .vertical .hand .card {
     width: 90px;
-    height: 60px;
+    height: 70px;
     margin-top: -30px;
 }
 
@@ -123,7 +123,7 @@
 }
 
 .deckWrapper .card.strongCard {
-    width: 60px;
+    width: 70px;
     height: 90px;
     position: relative;
     left: 65px;
@@ -160,6 +160,6 @@
 .yack > * {
     display: flex;
     flex-flow: column nowrap;
-    flex-basis: 70px;
+    flex-basis: 75px;
     align-items: center;
 }

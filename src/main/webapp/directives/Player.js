@@ -21,6 +21,8 @@ define([], function () {//<player></player>
                     $scope.data.defender = playerData.isDefender;
                     $scope.data.isFirstAttacker = playerData.isFirstAttacker;
                     $scope.data.isLoser = playerData.isLoser;
+                    $scope.data.isPlayerReady = playerData.isPlayerReady;
+                    $scope.data.isPlayerDone = playerData.isPlayerDone;
                 };
 
                 $scope.initialize();
@@ -28,7 +30,7 @@ define([], function () {//<player></player>
                 $scope.data.unregisterArr.push($scope.$on('reloadPlayers', function () {
 
                     $scope.updatePlayerData();
-                    console.log("render player: " + $scope.data.playerName);
+                    console.log("render player: ", $scope.data);
                 }));
 
 

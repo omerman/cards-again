@@ -16,7 +16,7 @@ define([], function () {//<drop-zone></drop-zone>
                     // only accept elements matching this CSS selector
                     accept: '.card',
                     // Require a 75% element overlap for a drop to be possible
-                    overlap: 0.60,
+                    overlap: 0.30,
 
                     // listen for drop related events:
 
