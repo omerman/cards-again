@@ -269,7 +269,7 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 	protected void stopFlow(final String gId) {
 		resetFlow(gId);
 		increaseFlow(gId, -1, -1);//set the flow impossible to be increased..
-		VertxService.getVertx().setTimer(3000, new Handler<Long>() {
+		VertxService.getVertx().setTimer(1500, new Handler<Long>() {
 			@Override
 			public void handle(Long event) {
 				GameServiceImpl.getInstance().endGame(gId);
@@ -388,11 +388,15 @@ public class FlowServiceImpl extends FlowService<DurakFlow, DurakAction> {
 		GameServiceImpl.getInstance().completeHand(gId, turnInitiatorIndex);
 
 		int turnIndex = GameServiceImpl.getInstance().getNextPlayerPos(gId, turnInitiatorIndex);
-		while(turnIndex != turnInitiatorIndex) {
-			if(turnIndex != defenderIndex) {
-				GameServiceImpl.getInstance().completeHand(gId, turnIndex);
+		if(turnInitiatorIndex != turnIndex) {
+			int nextTurnIndex = turnIndex;
+			do {
+				if(nextTurnIndex != defenderIndex) {
+					GameServiceImpl.getInstance().completeHand(gId, nextTurnIndex);
+				}
+				nextTurnIndex = GameServiceImpl.getInstance().getNextPlayerPos(gId, nextTurnIndex);
 			}
-			turnIndex = GameServiceImpl.getInstance().getNextPlayerPos(gId, turnIndex);
+			while(nextTurnIndex != turnIndex);
 		}
 
 		GameServiceImpl.getInstance().completeHand(gId, defenderIndex);
